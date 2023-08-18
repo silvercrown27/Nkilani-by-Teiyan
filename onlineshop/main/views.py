@@ -11,7 +11,7 @@ def cart_page(requests):
 
 
 def contact_page(requests):
-    return render(requests, " contact.html")
+    return render(requests, "contact.html")
 
 
 def checkout_page(requests):
