@@ -163,7 +163,7 @@
             <div class="col-lg-8">
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Billing Address</span></h5>
                 <div class="bg-light p-30 mb-5">
-                    <div class="row">
+                    <form class="row" id="paymentForm">
                         <div class="col-md-6 form-group">
                             <label>First Name</label>
                             <input class="form-control" type="text" placeholder="John">
@@ -172,9 +172,9 @@
                             <label>Last Name</label>
                             <input class="form-control" type="text" placeholder="Doe">
                         </div>
-                        <div class="col-md-6 form-group">
+                        <div class="col-md-6 form-group" >
                             <label>E-mail</label>
-                            <input class="form-control" type="text" placeholder="example@email.com">
+                            <input class="form-control" type="text" id="email" placeholder="example@email.com" required>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Mobile No</label>
@@ -200,13 +200,20 @@
                             <label>Place</label>
                             <input class="form-control" type="text" placeholder="Langata">
                         </div>
-                        <div class="col-md-6 form-group">
 
                         <div class="col-md-6 form-group">
                             <label>ZIP Code</label>
                             <input class="form-control" type="text" placeholder="123">
                         </div>
-                    </div>
+                        <div class="col-md-6 form-group">
+                            <label >Amount</label>
+                            <input class="form-control" type="tel" id="amount" required />
+                        </div>
+                        <div class="col-md-6 form-submit">
+                            <button type="submit" onclick="payWithPaystack()"> Pay </button>
+                        </div>
+                        <script src="https://js.paystack.co/v1/inline.js"></script>
+                    </form>
                 </div>
                 <div class="collapse mb-5" id="shipping-address">
                     <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Shipping Address</span></h5>
@@ -392,7 +399,7 @@
                 </p>
             </div>
             <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="img/payments.png" alt="">
+                <img class="img-fluid" src="{% static 'img/payments.png' %}" alt="">
             </div>
         </div>
     </div>
@@ -406,15 +413,16 @@
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
 
     <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
+    <script src="{% static 'mail/jqBootstrapValidation.min.js' %}"></script>
+    <script src="{% static 'mail/contact.js' %}"></script>
 
     <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/payments.js' %}"></script>
 </body>
 
 </html>

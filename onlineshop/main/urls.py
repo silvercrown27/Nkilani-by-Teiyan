@@ -11,4 +11,5 @@ urlpatterns = [
     path('signin', views.signin_page, name="signin"),
     path('signup', views.signup_page, name="signup"),
     path('checkout', views.checkout_page, name="checkout"),
+    path('verify-payment', views.verify_payment, name="verify"),
 ]
