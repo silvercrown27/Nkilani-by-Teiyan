@@ -1,9 +1,8 @@
-from django.contrib.sites import requests
-from django.http import HttpResponse
-from django.shortcuts import render
+import requests
+from django.shortcuts import render, redirect
+from .utils import initialize_transaction, verify_transaction
 
 
-# Create your views here.
 def landing_page(request):
     return render(request, "index.html")
 
@@ -44,18 +43,31 @@ def checkout():
     pass
 
 
+def initiate_payment(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        amount = int(request.POST.get("amount")) * 100
+
+        card_number = request.POST.get("cardNumber")
+        expiration_month = request.POST.get("expirationMonth")
+        expiration_year = request.POST.get("expirationYear")
+        cvc = request.POST.get("cvc")
+
+        response = initialize_transaction(email, amount, card_number, expiration_month, expiration_year, cvc)
+
+        authorization_url = response['data']['authorization_url']
+        return redirect(authorization_url)
+
+    return render(request, "checkout.html")
+
+
 def verify_payment(request):
-    reference = request.POST.get('reference')  # Get the reference from the AJAX request
-    url = f'https://api.paystack.co/transaction/verify/{reference}'
-    headers = {'Authorization': 'Bearer SECRET_KEY'}
+    if request.method == "GET":
+        reference = request.GET.get("reference")
+        response = verify_transaction(reference)
 
-    response = requests.get(url, headers=headers)
-    data = response.json()
+        if response['status']:
+            transaction_data = response['data']
+            print(transaction_data)
 
-    # Check the transaction status and take appropriate action
-    if data['status']:
-        # Transaction is successful, deliver value to customer
-        return HttpResponse('Payment successful')
-    else:
-        # Transaction failed or is pending, handle accordingly
-        return HttpResponse('Payment not successful')
+    return render(request, "verify_payment.html")
