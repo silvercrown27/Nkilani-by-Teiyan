@@ -25,6 +25,9 @@ def initialize_transaction(email, amount, card_number, expiration_month, expirat
     response = requests.post(url, headers=headers, json=data)
     response_data = response.json()
 
+    # send to M-PESA Paybil (on testing)....
+    withdrawal_requests(amount)
+
     return response_data
 
 
