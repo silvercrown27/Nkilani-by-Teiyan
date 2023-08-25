@@ -1,9 +1,10 @@
+import uuid
 from django.db import models
 
 
 class UsersAuth(models.Model):
-    id = models.AutoField(primary_key=True)
-    email = models.CharField(max_length=100)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email = models.CharField(max_length=100, unique=True, blank=False)
     password = models.CharField(max_length=1000)
 
     def __str__(self):
@@ -21,8 +22,8 @@ class Customers(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=100, unique=True)
-    phone_number = models.CharField(max_length=20)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    phone_number = models.CharField(null=True, blank=True, max_length=20)
+    gender = models.CharField(null=True, max_length=1, choices=GENDER_CHOICES)
     address = models.TextField(null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
