@@ -1,35 +1,54 @@
 import hashlib
+import os
 
+from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 
 from .models import *
 from django.shortcuts import render, redirect
-from .utils import initialize_transaction, verify_transaction
+
+
+def remove_media_root(file_paths):
+    media_root = settings.MEDIA_ROOT
+    len_mr = len(media_root)
+
+    return file_paths[len_mr + 1:]
 
 
 def landing_page(request):
-    return render(request, "index.html")
+    media_files = []
+    image_extensions = ('.png', '.jpg', '.jfif')
+    video_extensions = ('.gif', '.mp4', '.mkv')
+    for dirpath, dirname, filenames in os.walk(settings.MEDIA_ROOT):
+        for file in filenames:
+            if file.endswith(image_extensions + video_extensions):
+                path = os.path.join(remove_media_root(dirpath), file)
+                ext = file.split(".")[1]
+                media_files.append([path, f".{ext}"])
+
+    context = {"media_files": media_files, "v_ext": video_extensions, "i_ext": image_extensions}
+    return render(request, "overview.html")
 
 
 def cart_page(request):
-    return render(request, "cart.html")
+    return render(request, "cart-prev.html")
 
 
 def contact_page(request):
-    return render(request, "contact.html")
+    return render(request, "contact-prev.html")
 
 
 def checkout_page(request):
-    return render(request, "checkout.html")
+    return render(request, "checkout-prev.html")
 
 
 def detail_page(request):
-    return render(request, "detail.html")
+    return render(request, "detail-prev.html")
 
 
 def shop_page(request):
-    return render(request, "shop.html")
+    return render(request, "shop-prev.html")
 
 
 def signin_page(request):
@@ -56,7 +75,7 @@ def register(request):
         UsersAuth.objects.create(email=email, password=password_hash)
         Customers.objects.create(first_name=firstname, last_name=lastname, email=email)
 
-        return redirect('/signin/')
+        return redirect('signin')
 
     return render(request, 'Sign in.html')
 
@@ -68,8 +87,8 @@ def login(request):
     try:
         user = UsersAuth.objects.get(email=email)
         if password == user.password:
-            request.session['user_id'] = user.id
-            url = reverse('userview:home', args=[user.id])
+            request.session['user_id'] = f"{user.id}"
+            url = reverse('userview:user-home', args=[user.id])
             return redirect(url)
         else:
             return HttpResponse('incorrect Password')
@@ -78,38 +97,4 @@ def login(request):
 
 
 def wishlist_page(request):
-    return render(request, "wishlist.html")
-
-
-def checkout():
-    pass
-
-
-def initiate_payment(request):
-    if request.method == "POST":
-        email = request.POST.get("email")
-        amount = int(request.POST.get("amount")) * 100
-
-        card_number = request.POST.get("cardNumber")
-        expiration_month = request.POST.get("expirationMonth")
-        expiration_year = request.POST.get("expirationYear")
-        cvc = request.POST.get("cvc")
-
-        response = initialize_transaction(email, amount, card_number, expiration_month, expiration_year, cvc)
-
-        authorization_url = response['data']['authorization_url']
-        return redirect(authorization_url)
-
-    return render(request, "checkout.html")
-
-
-def verify_payment(request):
-    if request.method == "GET":
-        reference = request.GET.get("reference")
-        response = verify_transaction(reference)
-
-        if response['status']:
-            transaction_data = response['data']
-            print(transaction_data)
-
-    return render(request, "verify_payment.html")
+    return render(request, "wishlist-prev.html")

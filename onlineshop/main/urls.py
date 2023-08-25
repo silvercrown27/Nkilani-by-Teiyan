@@ -1,19 +1,20 @@
 from django.urls import path
 from . import views
 
+app_name = "overview"
+
 urlpatterns = [
     path('', views.landing_page, name="landing_page"),
-    path('contact', views.contact_page, name="contact"),
-    path('wishlist', views.wishlist_page, name="wishlist"),
-    path('detail', views.detail_page, name="detail"),
-    path('cart', views.cart_page, name="cart"),
-    path('shop', views.shop_page, name="shop"),
+    path('contact', views.contact_page, name="info"),
+    path('wishlist', views.wishlist_page, name="wishlist-prev"),
+    path('detail', views.detail_page, name="detail-prev"),
+    path('cart', views.cart_page, name="cart-prev"),
+    path('shop', views.shop_page, name="shop-prev"),
     path('signin', views.signin_page, name="signin"),
     path('signup', views.signup_page, name="signup"),
     path('register-user', views.register, name="register"),
     path('login-user', views.login, name="login"),
-    path('checkout', views.checkout_page, name="checkout"),
-    path('initiate-payment', views.initiate_payment, name='initiate_payment'),
-    path('verify-payment', views.verify_payment, name='verify-payment'),
+    path('checkout', views.checkout_page, name="checkout-prev"),
+
 ]
 
