@@ -17,17 +17,6 @@ def remove_media_root(file_paths):
 
 
 def landing_page(request):
-    media_files = []
-    image_extensions = ('.png', '.jpg', '.jfif')
-    video_extensions = ('.gif', '.mp4', '.mkv')
-    for dirpath, dirname, filenames in os.walk(settings.MEDIA_ROOT):
-        for file in filenames:
-            if file.endswith(image_extensions + video_extensions):
-                path = os.path.join(remove_media_root(dirpath), file)
-                ext = file.split(".")[1]
-                media_files.append([path, f".{ext}"])
-
-    context = {"media_files": media_files, "v_ext": video_extensions, "i_ext": image_extensions}
     return render(request, "overview.html")
 
 
