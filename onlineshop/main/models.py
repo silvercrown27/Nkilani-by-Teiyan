@@ -11,6 +11,17 @@ class UsersAuth(models.Model):
         return self.email
 
 
+class AdminAccounts(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    email = models.EmailField(max_length=100, null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.email
+
+
 class Customers(models.Model):
     GENDER_CHOICES = [
         ('M', 'Male'),
@@ -102,3 +113,40 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review by {self.customer.name} for {self.product.name}"
+
+
+class FeaturedProduct(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    date_added = models.DateField()
+    duration = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.product.name
+
+
+class OfferedProduct(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    date_added = models.DateField()
+    duration = models.PositiveIntegerField()
+    percentage_discount = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def __str__(self):
+        return self.product.name
+
+
+class FavoriteProduct(models.Model):
+    user = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product.name
+
+
+class FavoriteProduct(models.Model):
+    user = models.ForeignKey(Customers, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product.name

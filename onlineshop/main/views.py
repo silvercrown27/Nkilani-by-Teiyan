@@ -83,15 +83,22 @@ def register(request):
 def login(request):
     email = request.POST.get('email')
     password = request.POST.get('password')
-    password = hashlib.sha256(password.encode()).hexdigest()
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+
     try:
         user = UsersAuth.objects.get(email=email)
-        if password == user.password:
+        if password_hash == user.password:
             request.session['user_id'] = f"{user.id}"
-            url = reverse('userview:user-home', args=[user.id])
-            return redirect(url)
+            try:
+                admin_user = AdminAccounts.objects.get(email=email)
+                admin_url = reverse('adminview:admin-home', args=[user.id])
+                return redirect(admin_url)
+            except AdminAccounts.DoesNotExist:
+                customer_url = reverse('userview:user-home', args=[user.id])
+                return redirect(customer_url)
+
         else:
-            return HttpResponse('incorrect Password')
+            return HttpResponse('Incorrect Password')
     except UsersAuth.DoesNotExist:
         raise Http404(f"No user registered under the Email {email}")
 

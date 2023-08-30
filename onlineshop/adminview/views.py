@@ -9,11 +9,11 @@ from main.models import Product
 from main.models import UsersAuth
 
 
-def admin_page(request):
+def admin_page(request, admin_id):
     return render(request, "admin section.html")
 
 
-def add_product(request):
+def add_product(request, admin_id):
     if request.method == "POST":
         name = request.POST.get('product_name')
         description = request.POST.get('product_description')
