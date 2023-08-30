@@ -2,6 +2,7 @@ import hashlib
 import os
 
 from django.conf import settings
+from django.db import IntegrityError
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 
@@ -17,7 +18,18 @@ def remove_media_root(file_paths):
 
 
 def landing_page(request):
-    return render(request, "overview.html")
+    products = Product.objects.all()
+    for product in products:
+        print(f"Product Name: {product.name}")
+        print(f"Product Description: {product.description}")
+        print(f"Product Category: {product.category}")
+        print(f"Product Price: {product.price}")
+        print(f"Product Image: {product.image}")
+        print("-" * 30)
+
+    context = {"products": products}
+    return render(request, "overview.html", context)
+
 
 
 def cart_page(request):
@@ -56,15 +68,17 @@ def register(request):
         password = request.POST.get('password')
         password_hash = hashlib.sha256(password.encode()).hexdigest()
 
-        # Check if email already exists in UsersAuth
         if UsersAuth.objects.filter(email=email).exists():
             error_message = "Email already exists. Please use a different email."
             return render(request, 'registration_page.html', {'error_message': error_message})
 
-        UsersAuth.objects.create(email=email, password=password_hash)
-        Customers.objects.create(first_name=firstname, last_name=lastname, email=email)
-
-        return redirect('signin')
+        try:
+            user_auth = UsersAuth.objects.create(email=email, password=password_hash)
+            Customers.objects.create(user=user_auth, first_name=firstname, last_name=lastname)
+            return redirect('/signin')
+        except IntegrityError:
+            error_message = "An error occurred during registration. Please try again."
+            return render(request, 'registration_page.html', {'error_message': error_message})
 
     return render(request, 'Sign in.html')
 
