@@ -5,6 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/CloudLink" />
       <excludeFolder url="file://$MODULE_DIR$/virtenv" />
+      <excludeFolder url="file://$MODULE_DIR$/nkilanivirtenv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 (Nkilani-by-Teiyan) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
