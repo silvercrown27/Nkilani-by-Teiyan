@@ -1,11 +1,10 @@
-import os
-
 from django.http import Http404
 from django.conf import settings
 from django.shortcuts import render, redirect
-from django.core.files.storage import FileSystemStorage
 
 from main.models import UsersAuth
+from adminview.models import Product
+from .models import *
 from .utils import verify_transaction, initialize_transaction
 
 
@@ -22,16 +21,8 @@ def home_page(request, userid):
         if 'user_id' not in request.session and request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
-        products = []
-        image_extensions = ('.png', '.jpg', '.jfif')
-        for dirpath, dirname, filenames in os.walk(settings.MEDIA_ROOT):
-            for file in filenames:
-                if file.endswith(image_extensions):
-                    path = os.path.join(remove_media_root(dirpath), file)
-                    ext = file.split(".")[1]
-                    products.append([path, f".{ext}"])
-
-        context = {'user': user, "products": products, "i_ext": image_extensions}
+        products = Product.objects.all()[:8]
+        context = {"products": products, 'user': user}
 
         return render(request, 'index.html', context)
 
@@ -101,7 +92,8 @@ def shop_page(request, userid):
         if 'user_id' not in request.session and request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
-        context = {'user': user}
+        products = Product.objects.all()
+        context = {"products": products, 'user': user}
 
         return render(request, "shop.html", context)
 
@@ -151,3 +143,32 @@ def verify_payment(request, userid):
             print(transaction_data)
 
     return render(request, "verify_payment.html")
+
+
+def add_to_wishlist(request, userid):
+    try:
+        user = UsersAuth.objects.get(id=userid)
+        if 'user_id' not in request.session and request.session['user_id'] != f"{user.id}":
+            return redirect('/signin/')
+
+        context = {'user': user}
+
+        return render(request, 'index.html', context)
+
+    except UsersAuth.DoesNotExist:
+        raise Http404(f"No user registered under the id {userid}")
+
+
+def add_to_cart(request, userid):
+    try:
+        user = UsersAuth.objects.get(id=userid)
+        if 'user_id' not in request.session and request.session['user_id'] != f"{user.id}":
+            return redirect('/signin/')
+
+        context = {'user': user}
+
+        return render(request, 'index.html', context)
+
+    except UsersAuth.DoesNotExist:
+        raise Http404(f"No user registered under the id {userid}")
+    

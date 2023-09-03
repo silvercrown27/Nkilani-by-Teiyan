@@ -6,7 +6,8 @@ from django.db import IntegrityError
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 
-from .models import *
+from .models import UsersAuth, AdminAccounts, Customers
+from adminview.models import Product
 from django.shortcuts import render, redirect
 
 
