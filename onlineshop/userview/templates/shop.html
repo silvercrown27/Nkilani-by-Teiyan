@@ -303,19 +303,21 @@
                                     <div class="product-img position-relative overflow-hidden">
                                         <img class="img-fluid w-100" src="/media/{{product.image}}" alt="{{ product.name }}">
                                         <div class="product-action">
-                                            <form method="post" action="{% url 'add_product' %}">
+                                            <form method="post" action="../add-to-cart/">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="product_id" value="{{ product.id }}">
                                                 <button class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ product.id }}">
-                                                    <i class="fa fa-shopping-cart"></i> Add to Cart
+                                                    <i class="fa fa-shopping-cart"></i>
                                                 </button>
-                                                <button class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
-                                                    <i class="far fa-heart"></i> Add to Wishlist
-                                                </button>
-
-                                                <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
-                                                <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
                                             </form>
+                                           <form method="post" action="../add-to-cart/">
+                                                {% csrf_token %}
+                                                <button class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
+                                                    <i class="far fa-heart"></i>
+                                                </button>
+                                           </form>
+                                           <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                           <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
                                         </div>
                                     </div>
                                     <div class="text-center py-4">

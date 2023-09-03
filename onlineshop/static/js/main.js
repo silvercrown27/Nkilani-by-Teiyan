@@ -1,6 +1,6 @@
 (function ($) {
     "use strict";
-    
+
     // Dropdown on mouse hover
     $(document).ready(function () {
         function toggleNavbarMethod() {
@@ -17,8 +17,8 @@
         toggleNavbarMethod();
         $(window).resize(toggleNavbarMethod);
     });
-    
-    
+
+
     // Back to top button
     $(window).scroll(function () {
         if ($(this).scrollTop() > 100) {
@@ -28,7 +28,7 @@
         }
     });
     $('.back-to-top').click(function () {
-        $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
+        $('html, body').animate({ scrollTop: 0 }, 1500, 'easeInOutExpo');
         return false;
     });
 
@@ -41,20 +41,20 @@
         autoplay: true,
         smartSpeed: 1000,
         responsive: {
-            0:{
-                items:2
+            0: {
+                items: 2
             },
-            576:{
-                items:3
+            576: {
+                items: 3
             },
-            768:{
-                items:4
+            768: {
+                items: 4
             },
-            992:{
-                items:5
+            992: {
+                items: 5
             },
-            1200:{
-                items:6
+            1200: {
+                items: 6
             }
         }
     });
@@ -68,17 +68,17 @@
         autoplay: true,
         smartSpeed: 1000,
         responsive: {
-            0:{
-                items:1
+            0: {
+                items: 1
             },
-            576:{
-                items:2
+            576: {
+                items: 2
             },
-            768:{
-                items:3
+            768: {
+                items: 3
             },
-            992:{
-                items:4
+            992: {
+                items: 4
             }
         }
     });
@@ -99,6 +99,65 @@
         }
         button.parent().parent().find('input').val(newVal);
     });
-    
+
 })(jQuery);
 
+$(document).ready(function () {
+    $(".add-to-cart").click(function (e) {
+        e.preventDefault();
+        var productId = $(this).data("product-id");
+        $.ajax({
+            url: addToCartURL,
+            type: "POST",
+            data: {
+                csrfmiddlewaretoken: csrfToken,
+                product_id: productId
+            },
+            success: function (response) {
+                if (response.success) {
+                    // Handle the success response here (e.g., update the cart icon, show a notification).
+                } else {
+                    // Handle the failure response here (e.g., show an error message).
+                    console.error("Error adding to cart: " + response.message);
+                    // You can display the error message to the user, for example:
+                    // $("#error-message").text("Failed to add to cart: " + response.message);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                // Handle errors (e.g., show an error message).
+                console.error("AJAX error: " + textStatus + " - " + errorThrown);
+                // You can display a general error message to the user, for example:
+                // $("#error-message").text("An error occurred: " + errorThrown);
+            }
+        });
+    });
+
+    $(".add-to-wishlist").click(function (e) {
+        e.preventDefault();
+        var productId = $(this).data("product-id");
+        $.ajax({
+            url: addToWishlistURL, // Use the JavaScript variable
+            type: "POST",
+            data: {
+                csrfmiddlewaretoken: csrfToken,
+                product_id: productId
+            },
+            success: function (response) {
+                if (response.success) {
+                    // Handle the success response here (e.g., update the wishlist icon, show a notification).
+                } else {
+                    // Handle the failure response here (e.g., show an error message).
+                    console.error("Error adding to wishlist: " + response.message);
+                    // You can display the error message to the user, for example:
+                    // $("#error-message").text("Failed to add to wishlist: " + response.message);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                // Handle errors (e.g., show an error message).
+                console.error("AJAX error: " + textStatus + " - " + errorThrown);
+                // You can display a general error message to the user, for example:
+                // $("#error-message").text("An error occurred: " + errorThrown);
+            }
+        });
+    });
+});

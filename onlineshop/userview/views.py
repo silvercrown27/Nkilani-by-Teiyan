@@ -1,4 +1,4 @@
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.conf import settings
 from django.shortcuts import render, redirect
 
@@ -33,10 +33,13 @@ def home_page(request, userid):
 def cart_page(request, userid):
     try:
         user = UsersAuth.objects.get(id=userid)
-        if 'user_id' not in request.session and request.session['user_id'] != f"{user.id}":
+        if 'user_id' not in request.session or request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
-        context = {'user': user}
+        cart = Cart.objects.filter(customer=user).first()
+        cart_items = CartItem.objects.filter(cart=cart) if cart else []
+
+        context = {'user': user, 'cart': cart, 'cart_items': cart_items}
 
         return render(request, "cart.html", context)
 
@@ -104,10 +107,13 @@ def shop_page(request, userid):
 def wishlist_page(request, userid):
     try:
         user = UsersAuth.objects.get(id=userid)
-        if 'user_id' not in request.session and request.session['user_id'] != f"{user.id}":
+        if 'user_id' not in request.session or request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
-        context = {'user': user}
+        # Get the user's wishlist
+        wishlist = FavoriteProduct.objects.filter(user=user)
+
+        context = {'user': user, 'wishlist': wishlist}
 
         return render(request, "wishlist.html", context)
 
@@ -151,9 +157,15 @@ def add_to_wishlist(request, userid):
         if 'user_id' not in request.session and request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
-        context = {'user': user}
+        if request.method == 'POST':
+            product_id = request.POST.get('product_id')
 
-        return render(request, 'index.html', context)
+            FavoriteProduct.objects.create(user=userid, product=product_id)
+            print(f"Product {product_id} added to wishlist")
+
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
     except UsersAuth.DoesNotExist:
         raise Http404(f"No user registered under the id {userid}")
@@ -162,13 +174,31 @@ def add_to_wishlist(request, userid):
 def add_to_cart(request, userid):
     try:
         user = UsersAuth.objects.get(id=userid)
-        if 'user_id' not in request.session and request.session['user_id'] != f"{user.id}":
+        print("Product added to cart")
+
+        if 'user_id' not in request.session or request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
-        context = {'user': user}
+        if request.method == 'POST':
+            product_id = request.POST.get('product_id')
+            quantity = request.POST.get('quantity', 1)
+            product = Product.objects.get(id=product_id)
 
-        return render(request, 'index.html', context)
+            existing_cart_item = CartItem.objects.filter(cart__customer=user, product=product).first()
+
+            if existing_cart_item:
+                existing_cart_item.quantity += int(quantity)
+                existing_cart_item.save()
+            else:
+
+                cart = Cart.objects.get_or_create(customer=user)[0]
+                CartItem.objects.create(cart=cart, product=product, quantity=quantity)
+
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
     except UsersAuth.DoesNotExist:
         raise Http404(f"No user registered under the id {userid}")
+
     
