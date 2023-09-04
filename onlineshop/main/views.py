@@ -75,11 +75,13 @@ def register(request):
 
         try:
             user_auth = UsersAuth.objects.create(email=email, password=password_hash)
-            Customers.objects.create(user=user_auth, first_name=firstname, last_name=lastname)
+            customer = Customers.objects.create(id=user_auth.id, first_name=firstname, last_name=lastname)
+            customer.save()
+            user_auth.save()
             return redirect('/signin')
         except IntegrityError:
             error_message = "An error occurred during registration. Please try again."
-            return render(request, 'registration_page.html', {'error_message': error_message})
+            return render(request, 'sign up.html', {'error_message': error_message})
 
     return render(request, 'Sign in.html')
 

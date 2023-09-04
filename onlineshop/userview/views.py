@@ -2,7 +2,7 @@ from django.http import Http404, JsonResponse
 from django.conf import settings
 from django.shortcuts import render, redirect
 
-from main.models import UsersAuth
+from main.models import UsersAuth, Customers
 from adminview.models import Product
 from .models import *
 from .utils import verify_transaction, initialize_transaction
@@ -110,8 +110,8 @@ def wishlist_page(request, userid):
         if 'user_id' not in request.session or request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
-        # Get the user's wishlist
-        wishlist = FavoriteProduct.objects.filter(user=user)
+        customer = Customers.objects.get(id=user)
+        wishlist = FavoriteProduct.objects.filter(user=customer)
 
         context = {'user': user, 'wishlist': wishlist}
 
@@ -154,21 +154,27 @@ def verify_payment(request, userid):
 def add_to_wishlist(request, userid):
     try:
         user = UsersAuth.objects.get(id=userid)
-        if 'user_id' not in request.session and request.session['user_id'] != f"{user.id}":
+        if 'user_id' not in request.session or request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
         if request.method == 'POST':
             product_id = request.POST.get('product_id')
+            customer = Customers.objects.get(id=user.id)
 
-            FavoriteProduct.objects.create(user=userid, product=product_id)
-            print(f"Product {product_id} added to wishlist")
+            existing_wishlist_item = FavoriteProduct.objects.filter(user=customer, product_id=product_id)
 
-            return JsonResponse({'success': True})
+            if existing_wishlist_item.exists():
+                existing_wishlist_item.delete()
+                return JsonResponse({'success': True, 'message': 'Product removed from wishlist'})
+            else:
+                FavoriteProduct.objects.create(user=customer, product_id=product_id)
+                return JsonResponse({'success': True, 'message': 'Product added to wishlist'})
+
         else:
             return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
     except UsersAuth.DoesNotExist:
-        raise Http404(f"No user registered under the id {userid}")
+        return JsonResponse({'success': False, 'message': 'User not found'})
 
 
 def add_to_cart(request, userid):
@@ -184,15 +190,16 @@ def add_to_cart(request, userid):
             quantity = request.POST.get('quantity', 1)
             product = Product.objects.get(id=product_id)
 
-            existing_cart_item = CartItem.objects.filter(cart__customer=user, product=product).first()
+            customer = Customers.objects.get(id=user.id)
+            existing_cart_item = CartItem.objects.filter(cart__customer=customer.id, product=product.id)
 
-            if existing_cart_item:
+            if existing_cart_item.exists():
+                existing_cart_item = existing_cart_item.first()
                 existing_cart_item.quantity += int(quantity)
                 existing_cart_item.save()
             else:
-
-                cart = Cart.objects.get_or_create(customer=user)[0]
-                CartItem.objects.create(cart=cart, product=product, quantity=quantity)
+                cart, created = Cart.objects.get_or_create(customer=customer.id)
+                CartItem.objects.create(cart=cart.id, product=product.id, quantity=quantity)
 
             return JsonResponse({'success': True})
         else:
@@ -200,5 +207,3 @@ def add_to_cart(request, userid):
 
     except UsersAuth.DoesNotExist:
         raise Http404(f"No user registered under the id {userid}")
-
-    

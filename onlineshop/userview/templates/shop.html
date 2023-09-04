@@ -303,21 +303,20 @@
                                     <div class="product-img position-relative overflow-hidden">
                                         <img class="img-fluid w-100" src="/media/{{product.image}}" alt="{{ product.name }}">
                                         <div class="product-action">
-                                            <form method="post" action="../add-to-cart/">
+                                            <form method="post" action="{% url 'userview:add_to_cart' userid=user.id %}">
                                                 {% csrf_token %}
-                                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                                <button class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ product.id }}">
+                                                <button type="submit" class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ product.id }}">
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </button>
                                             </form>
-                                           <form method="post" action="../add-to-cart/">
+                                            <form method="post" action="{% url 'userview:add_to_wishlist' userid=user.id %}">
                                                 {% csrf_token %}
                                                 <button class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
                                                     <i class="far fa-heart"></i>
                                                 </button>
-                                           </form>
-                                           <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
-                                           <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                            </form>
+                                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
                                         </div>
                                     </div>
                                     <div class="text-center py-4">
@@ -339,8 +338,7 @@
                             {% endfor %}
                         </div>
                     </div>
-
-                    <!-- Products End -->
+                        <!-- Products End -->
                 </div>
             </div>
             <!-- Shop Product End -->
@@ -420,6 +418,72 @@
     </div>
     <!-- Footer End -->
 
+   <script>
+        $(document).ready(function() {
+            // Get the CSRF token from the cookie.
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            $(".add-to-cart").click(function(e) {
+                e.preventDefault();
+                var productId = $(this).data("product-id");
+                $.ajax({
+                    url: "{% url 'userview:add_to_cart' user.id %}",
+                    type: "POST",
+                    data: { product_id: productId },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Handle the success response here (e.g., update the cart icon, show a notification).
+                        } else {
+                            // Handle the failure response here (e.g., show an error message).
+                        }
+                    },
+                    error: function() {
+                        // Handle errors (e.g., show an error message).
+                    }
+                });
+            });
+
+            $(".add-to-wishlist").click(function(e) {
+                e.preventDefault();
+                var productId = $(this).data("product-id");
+                $.ajax({
+                    url: "{% url 'userview:add_to_wishlist' user.id %}",
+                    type: "POST",
+                    data: { product_id: productId },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Handle the success response here (e.g., update the wishlist icon, show a notification).
+                        } else {
+                            // Handle the failure response here (e.g., show an error message).
+                        }
+                    },
+                    error: function() {
+                        // Handle errors (e.g., show an error message).
+                    }
+                });
+            });
+        });
+        </script>
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
