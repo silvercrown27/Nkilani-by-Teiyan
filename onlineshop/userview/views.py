@@ -1,6 +1,7 @@
+from django.contrib import messages
 from django.http import Http404, JsonResponse
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from main.models import UsersAuth, Customers
 from adminview.models import Product
@@ -36,10 +37,10 @@ def cart_page(request, userid):
         if 'user_id' not in request.session or request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
-        cart = Cart.objects.filter(customer=user).first()
+        cart = Cart.objects.get(customer=user.id)
         cart_items = CartItem.objects.filter(cart=cart) if cart else []
 
-        context = {'user': user, 'cart': cart, 'cart_items': cart_items}
+        context = {'user': user, 'cart_items': cart_items}
 
         return render(request, "cart.html", context)
 
@@ -75,13 +76,22 @@ def checkout_page(request, userid):
         raise Http404(f"No user registered under the id {userid}")
 
 
-def detail_page(request, userid):
+def detail_page(request, userid, prodid):
     try:
         user = UsersAuth.objects.get(id=userid)
-        if 'user_id' not in request.session and request.session['user_id'] != f"{user.id}":
+        if 'user_id' not in request.session or request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
-        context = {'user': user}
+        product = get_object_or_404(Product, id=prodid)
+
+        reviews = Review.objects.filter(product=product)
+        related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+        context = {
+            'user': user,
+            'product': product,
+            'reviews': reviews,
+            'related_products': related_products,
+        }
 
         return render(request, "detail.html", context)
 
@@ -110,10 +120,12 @@ def wishlist_page(request, userid):
         if 'user_id' not in request.session or request.session['user_id'] != f"{user.id}":
             return redirect('/signin/')
 
-        customer = Customers.objects.get(id=user)
-        wishlist = FavoriteProduct.objects.filter(user=customer)
+        customer = Customers.objects.get(id=user.id)
+        wishlist_items = FavoriteProduct.objects.filter(user=customer)
 
-        context = {'user': user, 'wishlist': wishlist}
+        products = [item.product for item in wishlist_items]
+
+        context = {'user': user, 'products': products}
 
         return render(request, "wishlist.html", context)
 
@@ -188,18 +200,19 @@ def add_to_cart(request, userid):
         if request.method == 'POST':
             product_id = request.POST.get('product_id')
             quantity = request.POST.get('quantity', 1)
-            product = Product.objects.get(id=product_id)
+            product = get_object_or_404(Product, id=product_id)  # Use get_object_or_404 to fetch the product
 
-            customer = Customers.objects.get(id=user.id)
-            existing_cart_item = CartItem.objects.filter(cart__customer=customer.id, product=product.id)
+            customer = get_object_or_404(Customers, id=user.id)  # Use get_object_or_404 to fetch the customer
+
+            existing_cart_item = CartItem.objects.filter(cart__customer=customer, product=product)
 
             if existing_cart_item.exists():
                 existing_cart_item = existing_cart_item.first()
                 existing_cart_item.quantity += int(quantity)
                 existing_cart_item.save()
             else:
-                cart, created = Cart.objects.get_or_create(customer=customer.id)
-                CartItem.objects.create(cart=cart.id, product=product.id, quantity=quantity)
+                cart, created = Cart.objects.get_or_create(customer=customer)
+                CartItem.objects.create(cart=cart, product=product, quantity=quantity)
 
             return JsonResponse({'success': True})
         else:
@@ -207,3 +220,37 @@ def add_to_cart(request, userid):
 
     except UsersAuth.DoesNotExist:
         raise Http404(f"No user registered under the id {userid}")
+
+
+def add_review(request, userid, prodid):
+    try:
+        user = UsersAuth.objects.get(id=userid)
+        print("Product added to cart")
+
+        if 'user_id' not in request.session or request.session['user_id'] != f"{user.id}":
+            return redirect('/signin/')
+
+        if request.method == 'POST':
+            product = get_object_or_404(Product, id=prodid)
+
+            user_id = request.POST.get('user_id')
+            rating = request.POST.get('rating')
+            text = request.POST.get('text')
+
+            review = Review(product=product, user_id=user_id, rating=rating, text=text)
+            review.save()
+
+            messages.success(request, 'Your review has been added successfully.')
+
+            return redirect('userview:prod-detail', prod_name=product.name)
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+    except UsersAuth.DoesNotExist:
+        raise Http404(f"No user registered under the id {userid}")
+
+
+
+
+
+

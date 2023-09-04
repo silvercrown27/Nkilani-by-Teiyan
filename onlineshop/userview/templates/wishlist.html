@@ -135,6 +135,60 @@
     </div>
     <!-- Navbar End -->
 
+   <!-- Wishlist Start -->
+    <div class="container-fluid pt-5 pb-3">
+        <div class="row px-xl-5">
+            {% for product in products %}
+            <div class="col-lg-12 col-md-12 col-sm-12 pb-2">
+                <div class="product-item bg-light mb-4">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-3 col-sm-4">
+                            <div class="product-img position-relative overflow-hidden">
+                                <img class="img-fluid w-100" src="/media/{{product.image}}" alt="{{ product.name }}">
+                                <div class="product-action">
+                                    <form method="post" action="{% url 'userview:add_to_cart' userid=user.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ product.id }}">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </button>
+                                    </form>
+                                    <form method="post" action="{% url 'userview:add_to_wishlist' userid=user.id %}">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                    </form>
+                                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 col-md-6 col-sm-8">
+                            <div class="text-left py-4">
+                                <a class="h6 text-decoration-none text-truncate" href="">{{ product.name }}</a>
+                                <div class="d-flex align-items-center mt-2">
+                                    <h5>${{ product.price }}</h5>
+                                    <h6 class="text-muted ml-2"><del>${{ product.original_price }}</del></h6>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <small class="fa fa-star text-primary mr-1"></small>
+                                    <small class="fa fa-star text-primary mr-1"></small>
+                                    <small class="fa fa-star text-primary mr-1"></small>
+                                    <small class="far fa-star text-primary mr-1"></small>
+                                    <small class="far fa-star text-primary mr-1"></small>
+                                    <small>(99)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Wishlist End -->
+
+
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
         <div class="row px-xl-5 pt-5">

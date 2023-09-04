@@ -34,6 +34,7 @@ class Customers(models.Model):
     last_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=100, unique=True)
     phone_number = models.CharField(null=True, blank=True, max_length=20)
+    profile_picture = models.CharField(null=True, max_length=1000, default=None)
     gender = models.CharField(null=True, max_length=1, choices=GENDER_CHOICES)
     address = models.TextField(null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)

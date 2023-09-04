@@ -16,9 +16,14 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in Cart for {self.cart.customer.name}"
+
+    def save(self, *args, **kwargs):
+        self.total = self.quantity * self.product.price
+        super(CartItem, self).save(*args, **kwargs)
 
 
 class FavoriteProduct(models.Model):
