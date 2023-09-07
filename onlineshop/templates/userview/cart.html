@@ -25,43 +25,28 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-
-    <script src="{% static 'mail/contact.js' %}"></script>
-    <script type="text/javascript"
-        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js">function sendMail() {
-
-    }
-
-    </script>
-<script type="text/javascript">
-   (function(){
-      emailjs.init("06LD7BvAh9sTxnxn7");
-   })();
-</script>
 </head>
 
+
 <body>
-    <!-- Topbar Start -->
+   <!-- Topbar Start -->
     <div class="container-fluid">
         <div class="row bg-secondary py-1 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center h-100">
                     <a class="text-body mr-3" href="">About</a>
-                    <a class="text-body mr-3" href="contact.html">Contact</a>
-                    <a class="text-body mr-3" href="contact.html">Help</a>
+                    <a class="text-body mr-3" href="">Contact</a>
+                    <a class="text-body mr-3" href="">Help</a>
                     <a class="text-body mr-3" href="">FAQs</a>
                 </div>
             </div>
             <div class="col-lg-6 text-center text-lg-right">
-                <div class="d-inline-flex align-items-center">
-
-                </div>
                 <div class="d-inline-flex align-items-center d-block d-lg-none">
-                    <a href="../wishlist" class="btn px-0 ml-2" >
+                    <a href="{% url 'userview:user-wishlist' userid=user.id %}" class="btn px-0 ml-2" >
                         <i class="fas fa-heart text-dark"></i>
                         <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
                     </a>
-                    <a href="../cart" class="btn px-0 ml-2">
+                    <a href="{% url 'userview:user-cart' userid=user.id %}" class="btn px-0 ml-2">
                         <i class="fas fa-shopping-cart text-dark"></i>
                         <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
                     </a>
@@ -118,24 +103,24 @@
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="../home" class="nav-item nav-link active">Home</a>
-                            <a href="../shop" class="nav-item nav-link">Shop</a>
-                            <a href="../detail" class="nav-item nav-link">Shop Detail</a>
+                            <a href="{% url 'userview:user-home' userid=user.id %}" class="nav-item nav-link active">Home</a>
+                            <a href="{% url 'userview:user-shop' userid=user.id %}" class="nav-item nav-link">Shop</a>
+                            <a href="{% url 'userview:prod-detail' userid=user.id %}" class="nav-item nav-link">Shop Detail</a>
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages <i class="fa fa-angle-down mt-1"></i></a>
                                 <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
-                                    <a href="../cart" class="dropdown-item">Shopping Cart</a>
-                                    <a href="../checkout" class="dropdown-item">Checkout</a>
+                                    <a href="{% url 'userview:user-cart' userid=user.id %}" class="dropdown-item">Shopping Cart</a>
+                                    <a href="{% url 'userview:user-checkout' userid=user.id %}" class="dropdown-item">Checkout</a>
                                 </div>
                             </div>
-                            <a href="../contact" class="nav-item nav-link">Contact</a>
+                            <a href="{% url 'userview:contact' userid=user.id %}" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="../wishlist" class="btn px-0">
+                            <a href="{% url 'userview:user-wishlist' userid=user.id %}" class="btn px-0">
                                 <i class="fas fa-heart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
                             </a>
-                            <a href="../cart" class="btn px-0 ml-3">
+                            <a href="{% url 'userview:user-cart' userid=user.id %}" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
                             </a>
@@ -153,7 +138,8 @@
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
                     <a class="breadcrumb-item text-dark" href="#">Home</a>
-                    <span class="breadcrumb-item active">Contact</span>
+                    <a class="breadcrumb-item text-dark" href="#">Shop</a>
+                    <span class="breadcrumb-item active">Shopping Cart</span>
                 </nav>
             </div>
         </div>
@@ -161,58 +147,56 @@
     <!-- Breadcrumb End -->
 
 
-    <!-- Contact Start -->
+        <!-- Cart Start -->
     <div class="container-fluid">
-        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Contact Us</span></h2>
         <div class="row px-xl-5">
-            <div class="col-lg-7 mb-5">
-                <div class="contact-form bg-light p-30">
-                    <div id="success"></div>
-                    <form name="sentMessage" id="contactForm" novalidate="novalidate">
-                        <div class="control-group">
-                            <input type="text" class="form-control" id="name" placeholder="Your Name"
-                                required="required" data-validation-required-message="Please enter your name" />
-                            <p class="help-block text-danger"></p>
-                        </div>
-                        <div class="control-group">
-                            <input type="email" class="form-control" id="email" placeholder="Your Email"
-                                required="required" data-validation-required-message="Please enter your email" />
-                            <p class="help-block text-danger"></p>
-                        </div>
-                        <div class="control-group">
-                            <input type="text" class="form-control" id="subject" placeholder="Subject"
-                                required="required" data-validation-required-message="Please enter a subject" />
-                            <p class="help-block text-danger"></p>
-                        </div>
-                        <div class="control-group">
-                            <textarea class="form-control" rows="8" id="message" placeholder="Message"
-                                required="required"
-                                data-validation-required-message="Please enter your message"></textarea>
-                            <p class="help-block text-danger"></p>
-                        </div>
-                        <div>
-                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton" onclick="sendMail()">Send
-                                Message</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="col-lg-5 mb-5">
-                <div class="bg-light p-30 mb-30">
-                    <div class="map-responsive">
-                        <iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA0s1a7phLN0iaD6-UE7m4qP-z21pH0eSc&amp;q=Delta+Complex+School+Rangau" width="600" height="420" frameborder="0" style="border:0; width: 100%;" allowfullscreen=""></iframe>
-                     </div>
-
-                </div>
-                <div>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>Nairobi,Kenya,Africa</p>
-                    <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>nkilanibyteiyan@gmail.com</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt text-primary mr-3"></i>0720952739</p>
-                </div>
+            <div class="col-lg-8 table-responsive mb-5">
+                <table class="table table-light table-borderless table-hover text-center mb-0">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Products</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                        {% for cart_item in cart_items %}
+                        <tr>
+                            <td class="align-middle">
+                                <img src="/media/{{ cart_item.product.image }}" alt="{{ cart_item.product.name }}" style="width: 50px;">
+                                {{ cart_item.product.name }}
+                            </td>
+                            <td class="align-middle">${{ cart_item.product.price }}</td>
+                            <td class="align-middle">
+                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-sm btn-primary btn-minus">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                    </div>
+                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="{{ cart_item.quantity }}">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-sm btn-primary btn-plus">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle">{{ cart_item.total }}</td>
+                            <td class="align-middle">
+                                <button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    <!-- Contact End -->
+    <!-- Cart End -->
+
 
 
     <!-- Footer Start -->
@@ -289,6 +273,7 @@
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

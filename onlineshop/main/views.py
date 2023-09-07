@@ -1,14 +1,13 @@
-import hashlib
-import os
-
-from django.conf import settings
 from django.db import IntegrityError
-from django.http import HttpResponse, Http404
+from django.contrib.auth import authenticate, login as auth_login
+from django.http import HttpResponse, Http404, JsonResponse
 from django.urls import reverse
+from django.conf import settings
 
-from .models import UsersAuth, AdminAccounts, Customers
+from .models import AdminAccounts, Customers
 from adminview.models import Product
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
 
 
 def remove_media_root(file_paths):
@@ -67,17 +66,18 @@ def register(request):
         lastname = request.POST.get('lastname')
         email = request.POST.get('email')
         password = request.POST.get('password')
-        password_hash = hashlib.sha256(password.encode()).hexdigest()
 
-        if UsersAuth.objects.filter(email=email).exists():
+        if User.objects.filter(email=email).exists():
             error_message = "Email already exists. Please use a different email."
-            return render(request, 'registration_page.html', {'error_message': error_message})
+            return render(request, 'Sign In.html', {'error_message': error_message})
 
         try:
-            user_auth = UsersAuth.objects.create(email=email, password=password_hash)
-            customer = Customers.objects.create(id=user_auth.id, first_name=firstname, last_name=lastname)
+            print("signing in user")
+            user = User.objects.create_user(username=email, email=email, password=password)
+            customer = Customers.objects.create(user=user, first_name=firstname, last_name=lastname)
+            print(user.id)
             customer.save()
-            user_auth.save()
+
             return redirect('/signin')
         except IntegrityError:
             error_message = "An error occurred during registration. Please try again."
@@ -87,26 +87,33 @@ def register(request):
 
 
 def login(request):
-    email = request.POST.get('email')
-    password = request.POST.get('password')
-    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    if request.method == "POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
-    try:
-        user = UsersAuth.objects.get(email=email)
-        if password_hash == user.password:
-            request.session['user_id'] = f"{user.id}"
-            try:
-                admin_user = AdminAccounts.objects.get(email=email)
+        try:
+            admin_user = AdminAccounts.objects.get(email=email)
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                auth_login(request, user)
                 admin_url = reverse('adminview:admin-home', args=[user.id])
                 return redirect(admin_url)
-            except AdminAccounts.DoesNotExist:
-                customer_url = reverse('userview:user-home', args=[user.id])
-                return redirect(customer_url)
+            else:
+                return JsonResponse({'error': 'Incorrect Email or Password'}, status=400)
+        except AdminAccounts.DoesNotExist:
+            try:
+                user = authenticate(request, username=email, password=password)
+                customer = Customers.objects.get(user=user)
+                if user is not None:
+                    auth_login(request, user)
+                    customer_url = reverse('userview:user-home', args=[user.id])
+                    return redirect(customer_url)
+                else:
+                    return JsonResponse({'error': 'Incorrect Email or Password'}, status=400)
+            except Customers.DoesNotExist:
+                return JsonResponse({'error': 'User not found'}, status=404)
 
-        else:
-            return HttpResponse('Incorrect Password')
-    except UsersAuth.DoesNotExist:
-        raise Http404(f"No user registered under the Email {email}")
+    return render(request, 'Sign in.html')
 
 
 def wishlist_page(request):

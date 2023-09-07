@@ -1,14 +1,8 @@
-import os
-from tempfile import NamedTemporaryFile
-
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 
 from .models import Product
-
-from main.models import UsersAuth
-
 
 from PIL import Image
 import os

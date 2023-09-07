@@ -41,7 +41,7 @@
         <div class="col-lg-6 mb-5 mb-lg-0">
           <div class="card">
             <div class="card-body py-5 px-md-5">
-              <form id="loginForm" action="login-user" method="post">
+              <form id="loginForm" action="{% url 'overview:login' %}" method="post">
                   {% csrf_token %}
                     <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
 
