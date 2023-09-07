@@ -6,10 +6,10 @@ from . import views
 app_name = 'userview'
 
 urlpatterns = [
-    path('home/', views.home_page, name="user-home"),
+    path('', views.home_page, name="user-home"),
     path('contact/', views.contact_page, name="contact"),
     path('wishlist/', views.wishlist_page, name="user-wishlist"),
-    path('<str:prodid>/', views.detail_page, name="prod-detail"),
+    path('detail/<prodid>/', views.detail_page, name="prod-detail"),
     path('cart/', views.cart_page, name="user-cart"),
     path('shop/', views.shop_page, name="user-shop"),
     path('checkout/', views.checkout_page, name="user-checkout"),

@@ -41,11 +41,11 @@
             </div>
             <div class="col-lg-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center d-block d-lg-none">
-                    <a href="{% url 'userview:user-wishlist' userid=user.id %}" class="btn px-0 ml-2" >
+                    <a href="{% url 'userview:user-wishlist' %}" class="btn px-0 ml-2" >
                         <i class="fas fa-heart text-dark"></i>
                         <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
                     </a>
-                    <a href="{% url 'userview:user-cart' userid=user.id %}" class="btn px-0 ml-2">
+                    <a href="{% url 'userview:user-cart' %}" class="btn px-0 ml-2">
                         <i class="fas fa-shopping-cart text-dark"></i>
                         <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
                     </a>
@@ -102,24 +102,24 @@
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="{% url 'userview:user-home' userid=user.id %}" class="nav-item nav-link active">Home</a>
-                            <a href="{% url 'userview:user-shop' userid=user.id %}" class="nav-item nav-link">Shop</a>
-                            <a href="{% url 'userview:prod-detail' userid=user.id %}" class="nav-item nav-link">Shop Detail</a>
+                            <a href="{% url 'userview:user-home' %}" class="nav-item nav-link active">Home</a>
+                            <a href="{% url 'userview:user-shop' %}" class="nav-item nav-link">Shop</a>
+                            <a href="" class="nav-item nav-link">Shop Detail</a>
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages <i class="fa fa-angle-down mt-1"></i></a>
                                 <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
-                                    <a href="{% url 'userview:user-cart' userid=user.id %}" class="dropdown-item">Shopping Cart</a>
-                                    <a href="{% url 'userview:user-checkout' userid=user.id %}" class="dropdown-item">Checkout</a>
+                                    <a href="{% url 'userview:user-cart' %}" class="dropdown-item">Shopping Cart</a>
+                                    <a href="{% url 'userview:user-checkout' %}" class="dropdown-item">Checkout</a>
                                 </div>
                             </div>
-                            <a href="{% url 'userview:contact' userid=user.id %}" class="nav-item nav-link">Contact</a>
+                            <a href="{% url 'userview:contact' %}" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="{% url 'userview:user-wishlist' userid=user.id %}" class="btn px-0">
+                            <a href="{% url 'userview:user-wishlist' %}" class="btn px-0">
                                 <i class="fas fa-heart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
                             </a>
-                            <a href="{% url 'userview:user-cart' userid=user.id %}" class="btn px-0 ml-3">
+                            <a href="{% url 'userview:user-cart' %}" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
                             </a>

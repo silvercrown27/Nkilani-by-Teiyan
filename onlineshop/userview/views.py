@@ -17,79 +17,79 @@ def remove_media_root(file_paths):
     return file_paths[len_mr + 1:]
 
 
-@login_required
-def home_page(request, userid):
+@login_required(login_url='/overview/')
+def home_page(request):
     user = request.user
 
     if not request.user.is_authenticated:
-        return redirect('/signin/')
+        return redirect('/overview/')
 
     try:
         customer = Customers.objects.get(user=user)
         products = Product.objects.all()[:8]
 
         context = {"products": products, 'user': user, "customer": customer}
-        return render(request, 'index.html', context)
+        return render(request, 'userview/index.html', context)
 
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
 
 
-def cart_page(request, userid):
+def cart_page(request):
     user = request.user
 
     if not request.user.is_authenticated:
-        return redirect('/signin/')
+        return redirect('/overview/')
 
     try:
         customer = Customers.objects.get(user=user)
 
-        cart = Cart.objects.get(customer=user.customer) if hasattr(user, 'customer') else None
+        cart = Cart.objects.get(customer=customer)
         cart_items = CartItem.objects.filter(cart=cart) if cart else []
 
         context = {'user': user, 'cart_items': cart_items, "customer": customer}
 
-        return render(request, "cart.html", context)
+        return render(request, "userview/cart.html", context)
 
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
 
 
-def contact_page(request, userid):
+def contact_page(request):
     user = request.user
 
     if not request.user.is_authenticated:
-        return redirect('/signin/')
+        return redirect('/overview/')
 
     try:
         customer = Customers.objects.get(user=user)
         context = {'user': user, "customer":customer}
-        return render(request, "contact.html", context)
+        return render(request, "userview/contact.html", context)
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
 
 
-def checkout_page(request, userid):
+def checkout_page(request):
     user = request.user
 
     if not request.user.is_authenticated:
-        return redirect('/signin/')
+        return redirect('/overview/')
 
     try:
         customer = Customers.objects.get(user=user)
         context = {'user': user, "customer": customer}
 
-        return render(request, "checkout.html", context)
+        return render(request, "userview/checkout.html", context)
 
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
 
 
-def detail_page(request, userid, prodid):
+def detail_page(request, prodid):
     user = request.user
 
     if not request.user.is_authenticated:
-        return redirect('/signin/')
+        return redirect('/overview/')
 
     try:
         customer = Customers.objects.get(user=user)
@@ -104,17 +104,17 @@ def detail_page(request, userid, prodid):
             'reviews': reviews,
             'related_products': related_products,
         }
-        return render(request, "detail.html", context)
+        return render(request, "userview/detail.html", context)
 
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
 
 
-def shop_page(request, userid):
+def shop_page(request):
     user = request.user
 
     if not request.user.is_authenticated:
-        return redirect('/signin/')
+        return redirect('/overview/')
 
     try:
         customer = Customers.objects.get(user=user)
@@ -122,17 +122,17 @@ def shop_page(request, userid):
         products = Product.objects.all()
         context = {"products": products, 'user': user, "customer": customer}
 
-        return render(request, "shop.html", context)
+        return render(request, "userview/shop.html", context)
 
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
 
 
-def wishlist_page(request, userid):
+def wishlist_page(request):
     user = request.user
 
     if not request.user.is_authenticated:
-        return redirect('/signin/')
+        return redirect('/overview/')
 
     try:
         customer = Customers.objects.get(user=user)
@@ -142,31 +142,41 @@ def wishlist_page(request, userid):
 
         context = {'user': user, "customer": customer, 'products': products}
 
-        return render(request, "wishlist.html", context)
+        return render(request, "userview/wishlist.html", context)
 
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
 
 
-def initiate_payment(request, userid):
-    if request.method == "POST":
-        email = request.POST.get("email")
-        amount = int(request.POST.get("amount")) * 100
+def initiate_payment(request):
+    user = request.user
 
-        card_number = request.POST.get("cardNumber")
-        expiration_month = request.POST.get("expirationMonth")
-        expiration_year = request.POST.get("expirationYear")
-        cvc = request.POST.get("cvc")
+    if not request.user.is_authenticated:
+        return redirect('/overview/')
 
-        response = initialize_transaction(email, amount, card_number, expiration_month, expiration_year, cvc)
+    try:
+        customer = Customers.objects.get(user=user)
+        if request.method == "POST":
+            email = request.POST.get("email")
+            amount = int(request.POST.get("amount")) * 100
 
-        authorization_url = response['data']['authorization_url']
-        return redirect(authorization_url)
+            card_number = request.POST.get("cardNumber")
+            expiration_month = request.POST.get("expirationMonth")
+            expiration_year = request.POST.get("expirationYear")
+            cvc = request.POST.get("cvc")
 
-    return render(request, "checkout.html")
+            response = initialize_transaction(email, amount, card_number, expiration_month, expiration_year, cvc)
+
+            authorization_url = response['data']['authorization_url']
+            return redirect(authorization_url)
+
+        return render(request, "userview/checkout.html")
+
+    except Customers.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'User not found'})
 
 
-def verify_payment(request, userid):
+def verify_payment(request):
     if request.method == "GET":
         reference = request.GET.get("reference")
         response = verify_transaction(reference)
@@ -175,14 +185,14 @@ def verify_payment(request, userid):
             transaction_data = response['data']
             print(transaction_data)
 
-    return render(request, "verify_payment.html")
+    return render(request, "userview/verify_payment.html")
 
 
-def add_to_wishlist(request, userid):
+def add_to_wishlist(request):
     user = request.user
 
     if not request.user.is_authenticated:
-        return redirect('/signin/')
+        return redirect('/overview/')
 
     try:
         customer = Customers.objects.get(user=user)
@@ -206,11 +216,11 @@ def add_to_wishlist(request, userid):
         return JsonResponse({'success': False, 'message': 'User not found'})
 
 
-def add_to_cart(request, userid):
+def add_to_cart(request):
     user = request.user
 
     if not request.user.is_authenticated:
-        return redirect('/signin/')
+        return redirect('/overview/')
 
     try:
         customer = Customers.objects.get(user=user)
@@ -219,6 +229,7 @@ def add_to_cart(request, userid):
             product_id = request.POST.get('product_id')
             quantity = request.POST.get('quantity', 1)
             product = get_object_or_404(Product, id=product_id)
+            print("Adding item to cart")
 
             existing_cart_item = CartItem.objects.filter(cart__customer=customer, product=product)
 
@@ -238,11 +249,11 @@ def add_to_cart(request, userid):
         raise Http404(f"No user registered under the id {user.id}")
 
 
-def add_review(request, userid, prodid):
+def add_review(request, prodid):
     user = request.user
 
     if not request.user.is_authenticated:
-        return redirect('/signin/')
+        return redirect('/overview/')
 
     try:
         customer = Customers.objects.get(user=user)
@@ -259,15 +270,9 @@ def add_review(request, userid, prodid):
 
             messages.success(request, 'Your review has been added successfully.')
 
-            return redirect('userview:prod-detail', userid=user.id, prod_name=product.name)
+            return redirect('userview:prod-detail', prod_name=product.name)
         else:
             return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
     except Customers.DoesNotExist:
-        raise Http404(f"No user registered under the id {userid}")
-
-
-
-
-
-
+        raise Http404(f"No user registered under the id {user.id}")

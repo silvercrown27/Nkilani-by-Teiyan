@@ -53,11 +53,11 @@ class ImageResizer:
             print(f"Error: {e}")
 
 
-def admin_page(request, admin_id):
-    return render(request, "admin section.html")
+def admin_page(request, user):
+    return render(request, "adminview/admin section.html")
 
 
-def add_product(request, admin_id):
+def add_product(request, user):
     if request.method == "POST":
         name = request.POST.get('product_name')
         description = request.POST.get('product_description')
@@ -78,4 +78,4 @@ def add_product(request, admin_id):
         Product.objects.create(name=name, description=description, image=os.path.join(default_path, image.name),
                                price=price, category=category)
 
-    return render(request, 'admin section.html')
+    return render(request, 'adminview/admin section.html')
