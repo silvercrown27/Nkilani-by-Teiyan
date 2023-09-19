@@ -48,7 +48,10 @@ def detail_page(request):
 
 
 def shop_page(request):
-    return render(request, "main/shop-prev.html")
+    products = Product.objects.all()
+    context = {"products": products}
+
+    return render(request, "main/shop-prev.html", context)
 
 
 def signin_page(request):

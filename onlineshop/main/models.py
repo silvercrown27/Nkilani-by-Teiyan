@@ -35,3 +35,14 @@ class Customers(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+class UserCartItem(models.Model):
+    from adminview.models import Product
+
+    user_session = models.CharField(max_length=255)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return self.product.name
