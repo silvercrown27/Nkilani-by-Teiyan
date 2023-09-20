@@ -1,13 +1,13 @@
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login as auth_login
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
 from django.urls import reverse
 from django.conf import settings
 
-from .models import AdminAccounts, Customers
-from adminview.models import Product
-from django.shortcuts import render, redirect
+from .models import AdminAccounts, Customers, UserCartItem
 from django.contrib.auth.models import User
+from adminview.models import Product
 
 
 def remove_media_root(file_paths):
@@ -15,6 +15,22 @@ def remove_media_root(file_paths):
     len_mr = len(media_root)
 
     return file_paths[len_mr + 1:]
+
+
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+
+    user_session = request.session.session_key
+    cart_item, created = UserCartItem.objects.get_or_create(
+        user_session=user_session,
+        product=product
+    )
+
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    return redirect('/detail/', product_id=product.id)
 
 
 def landing_page(request):
