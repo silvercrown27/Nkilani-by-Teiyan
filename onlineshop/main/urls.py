@@ -15,6 +15,5 @@ urlpatterns = [
     path('register-user', views.register, name="register"),
     path('login-user', views.login, name="login"),
     path('checkout', views.checkout_page, name="checkout-prev"),
-
 ]
 

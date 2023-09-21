@@ -12,7 +12,7 @@ from decouple import config
 
 from mpesa.core import MpesaClient
 
-from main.models import Customers
+from main.models import Customers, ContactUs
 from adminview.models import Product
 from .models import *
 from .utils import verify_transaction, initialize_transaction
@@ -286,24 +286,6 @@ def add_review(request, prodid):
         raise Http404(f"No user registered under the id {user.id}")
 
 
-def oath_success():
-    cl = MpesaClient()
-    r = cl.access_token()
-    print(r)
-    stk_push_success(cl)
-    return JsonResponse(r, safe=False)
-
-
-def stk_push_success(cl):
-    number = config('LNM_PHONE_NUMBER')
-    amount = 1
-    account_ref = 'ABC001'
-    transaction_desc = 'STK Push Description'
-    callback_url = stk_push_callback_url
-    response = cl.stk_push(number, amount, account_ref, transaction_desc, callback_url)
-    return JsonResponse(response, safe=False)
-
-
 def lipa_na_mpesa_online(request):
     cl = MpesaClient()
     access_token = cl.access_token()
@@ -340,3 +322,16 @@ def lipa_na_mpesa_online(request):
     resp = requests.post(api_url, json=request_data, headers=headers)
     print(resp)
     return HttpResponse('success')
+
+
+def contactus(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message = request.POST.get("message")
+
+        ContactUs.objects.create(name=name, email=email, subject=subject, message=message).save()
+        print(f"message from {name} has been sent!")
+
+    return redirect("userview:contact")

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
 
 
 class AdminAccounts(models.Model):
@@ -57,3 +58,15 @@ class AccessToken(models.Model):
 
     def __str__(self):
         return self.token
+
+
+class ContactUs(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    name = models.CharField(null=False, blank=False, max_length=100)
+    email = models.EmailField(null=False, blank=False)
+    subject = models.CharField(null=True, blank=True, max_length=100)
+    message = models.TextField(null=False, blank=False, max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name + "- on:" + self.created_at
