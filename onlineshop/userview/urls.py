@@ -15,6 +15,7 @@ urlpatterns = [
     path('checkout/', views.checkout_page, name="user-checkout"),
     path('initiate-payment/', views.initiate_payment, name='initiate_payment'),
     path('verify-payment/', views.verify_payment, name='verify-payment'),
+    path('c2b-mp-pay/', views.lipa_na_mpesa_online, name='c2b-mpesa-transaction'),
     path('add-to-cart/', views.add_to_cart, name='add_to_cart'),
     path('add-to-wishlist/', views.add_to_wishlist, name='add_to_wishlist'),
     path('<str:prodid>-review/', views.add_review, name='add-review'),

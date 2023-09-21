@@ -1,20 +1,21 @@
 from django.contrib import messages
+from django.contrib.sites import requests
 from django.http import Http404, JsonResponse, HttpResponse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django_daraja.mpesa.core import MpesaClient
+from django_daraja.views import stk_push_callback_url
+import requests
+import base64
+from datetime import datetime
+from decouple import config
+
+from mpesa.core import MpesaClient
 
 from main.models import Customers
 from adminview.models import Product
 from .models import *
 from .utils import verify_transaction, initialize_transaction
-
-from decouple import config
-
-cl = MpesaClient()
-stk_push_callback_url = "https://darajambili.herokuapp.com/express-payment"
-b2c_callback_url = "https://darajambili.herokuapp.com/b2c/result"
 
 
 def remove_media_root(file_paths):
@@ -85,17 +86,8 @@ def checkout_page(request):
     try:
         customer = Customers.objects.get(user=user)
         context = {'user': user, "customer": customer}
-        from django_daraja.mpesa.core import MpesaClient
 
-        cl = MpesaClient()
-
-        number = config('LNM_PHONE_NUMBER')
-        amount = 1
-        account_reference = 'reference'
-        transaction_desc = 'Description'
-        callback_url = 'https://api.darajambili.com/express-payment'
-        response = cl.stk_push(number, amount, account_reference, transaction_desc, callback_url)
-        return HttpResponse(response)
+        return render(request, "userview/checkout.html", context)
 
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
@@ -184,8 +176,7 @@ def initiate_payment(request):
             # response = initialize_transaction(email, amount, card_number, expiration_month, expiration_year, cvc)
             #
             # authorization_url = response['data']['authorization_url']
-            oath_success()
-            return redirect("userview:user-checkout")
+            return redirect("userview:c2b-mpesa-transaction")
 
         return render(request, "userview/checkout.html")
 
@@ -296,16 +287,56 @@ def add_review(request, prodid):
 
 
 def oath_success():
+    cl = MpesaClient()
     r = cl.access_token()
-    stk_push_success()
+    print(r)
+    stk_push_success(cl)
     return JsonResponse(r, safe=False)
 
 
-def stk_push_success():
+def stk_push_success(cl):
     number = config('LNM_PHONE_NUMBER')
     amount = 1
     account_ref = 'ABC001'
     transaction_desc = 'STK Push Description'
     callback_url = stk_push_callback_url
     response = cl.stk_push(number, amount, account_ref, transaction_desc, callback_url)
-    return JsonResponse(response.response_description, safe=False)
+    return JsonResponse(response, safe=False)
+
+
+def lipa_na_mpesa_online(request):
+    cl = MpesaClient()
+    access_token = cl.access_token()
+    api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+    headers = {"Authorization": "Bearer %s" % access_token}
+
+    BusinessShortCode = config('MPESA_EXPRESS_SHORTCODE')
+
+    # Generate the password
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    passkey = config('MPESA_PASSKEY')
+    password = base64.b64encode((BusinessShortCode + passkey + timestamp).encode('ascii')).decode('utf-8')
+
+    PartyA = "254743687737"
+    PartyB = BusinessShortCode
+    PhoneNumber = "254743687737"
+    AccountReference = "Bradley"
+    TransactionDesc = "Testing stk push"
+
+    request_data = {
+        "BusinessShortCode": BusinessShortCode,
+        "Password": password,
+        "Timestamp": timestamp,
+        "TransactionType": "CustomerBuyGoodsOnline",
+        "Amount": 1,
+        "PartyA": PartyA,
+        "PartyB": PartyB,
+        "PhoneNumber": PhoneNumber,
+        "CallBackURL": stk_push_callback_url,
+        "AccountReference": AccountReference,
+        "TransactionDesc": TransactionDesc
+    }
+
+    resp = requests.post(api_url, json=request_data, headers=headers)
+    print(resp)
+    return HttpResponse('success')
