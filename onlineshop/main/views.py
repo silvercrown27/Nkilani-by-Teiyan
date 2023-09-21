@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login as auth_login
 from django.shortcuts import get_object_or_404, render, redirect
@@ -5,7 +6,7 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.conf import settings
 
-from .models import AdminAccounts, Customers, UserCartItem
+from .models import *
 from django.contrib.auth.models import User
 from adminview.models import Product
 
@@ -35,13 +36,13 @@ def add_to_cart(request, product_id):
 
 def landing_page(request):
     products = Product.objects.all()
-    for product in products:
-        print(f"Product Name: {product.name}")
-        print(f"Product Description: {product.description}")
-        print(f"Product Category: {product.category}")
-        print(f"Product Price: {product.price}")
-        print(f"Product Image: {product.image}")
-        print("-" * 30)
+    # for product in products:
+    #     print(f"Product Name: {product.name}")
+    #     print(f"Product Description: {product.description}")
+    #     print(f"Product Category: {product.category}")
+    #     print(f"Product Price: {product.price}")
+    #     print(f"Product Image: {product.image}")
+    #     print("-" * 30)
 
     context = {"products": products}
     return render(request, "main/overview.html", context)
@@ -137,3 +138,12 @@ def login(request):
 
 def wishlist_page(request):
     return render(request, "wishlist-prev.html")
+
+
+def newsletter(request):
+    if request.method == "POST":
+        email = request.POST.get("newsletter_email")
+        print("<" + "-"*20 + "email:" + email)
+
+        Newsletter.objects.create(email=email).save()
+    return redirect("/")
