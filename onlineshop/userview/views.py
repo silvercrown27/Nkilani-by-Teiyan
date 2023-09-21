@@ -1,13 +1,20 @@
 from django.contrib import messages
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django_daraja.mpesa.core import MpesaClient
 
 from main.models import Customers
 from adminview.models import Product
 from .models import *
 from .utils import verify_transaction, initialize_transaction
+
+from decouple import config
+
+cl = MpesaClient()
+stk_push_callback_url = "https://darajambili.herokuapp.com/express-payment"
+b2c_callback_url = "https://darajambili.herokuapp.com/b2c/result"
 
 
 def remove_media_root(file_paths):
@@ -78,8 +85,17 @@ def checkout_page(request):
     try:
         customer = Customers.objects.get(user=user)
         context = {'user': user, "customer": customer}
+        from django_daraja.mpesa.core import MpesaClient
 
-        return render(request, "userview/checkout.html", context)
+        cl = MpesaClient()
+
+        number = config('LNM_PHONE_NUMBER')
+        amount = 1
+        account_reference = 'reference'
+        transaction_desc = 'Description'
+        callback_url = 'https://api.darajambili.com/express-payment'
+        response = cl.stk_push(number, amount, account_reference, transaction_desc, callback_url)
+        return HttpResponse(response)
 
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
@@ -157,18 +173,19 @@ def initiate_payment(request):
     try:
         customer = Customers.objects.get(user=user)
         if request.method == "POST":
-            email = request.POST.get("email")
-            amount = int(request.POST.get("amount")) * 100
-
-            card_number = request.POST.get("cardNumber")
-            expiration_month = request.POST.get("expirationMonth")
-            expiration_year = request.POST.get("expirationYear")
-            cvc = request.POST.get("cvc")
-
-            response = initialize_transaction(email, amount, card_number, expiration_month, expiration_year, cvc)
-
-            authorization_url = response['data']['authorization_url']
-            return redirect(authorization_url)
+            # email = request.POST.get("email")
+            # amount = int(request.POST.get("amount")) * 100
+            #
+            # card_number = request.POST.get("cardNumber")
+            # expiration_month = request.POST.get("expirationMonth")
+            # expiration_year = request.POST.get("expirationYear")
+            # cvc = request.POST.get("cvc")
+            #
+            # response = initialize_transaction(email, amount, card_number, expiration_month, expiration_year, cvc)
+            #
+            # authorization_url = response['data']['authorization_url']
+            oath_success()
+            return redirect("userview:user-checkout")
 
         return render(request, "userview/checkout.html")
 
@@ -276,3 +293,19 @@ def add_review(request, prodid):
 
     except Customers.DoesNotExist:
         raise Http404(f"No user registered under the id {user.id}")
+
+
+def oath_success():
+    r = cl.access_token()
+    stk_push_success()
+    return JsonResponse(r, safe=False)
+
+
+def stk_push_success():
+    number = config('LNM_PHONE_NUMBER')
+    amount = 1
+    account_ref = 'ABC001'
+    transaction_desc = 'STK Push Description'
+    callback_url = stk_push_callback_url
+    response = cl.stk_push(number, amount, account_ref, transaction_desc, callback_url)
+    return JsonResponse(response.response_description, safe=False)

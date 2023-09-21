@@ -5,11 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e8e711c6-2dc1-4017-be30-d02382d98831" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/onlineshop/mpesa/core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/onlineshop/mpesa/exceptions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/onlineshop/mpesa/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/main/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/main/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/nkilanidb.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/nkilanidb.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/overview.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/overview.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/shop-prev.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/shop-prev.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/onlineshop/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/onlineshop/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/cart.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/cart.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/checkout.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/checkout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/userview/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/userview/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/userview/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/userview/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,5 +74,8 @@
       <updated>1693669915967</updated>
     </task>
     <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
   </component>
 </project>
