@@ -107,13 +107,6 @@
                         <div class="navbar-nav mr-auto py-0">
                             <a href="{% url 'userview:user-home' %}" class="nav-item nav-link active">Home</a>
                             <a href="{% url 'userview:user-shop' %}" class="nav-item nav-link">Shop</a>
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages <i class="fa fa-angle-down mt-1"></i></a>
-                                <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
-                                    <a href="{% url 'userview:user-cart' %}" class="dropdown-item">Shopping Cart</a>
-                                    <a href="{% url 'userview:user-checkout' %}" class="dropdown-item">Checkout</a>
-                                </div>
-                            </div>
                             <a href="{% url 'userview:contact' %}" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
@@ -253,7 +246,7 @@
                             <form method="post" action="{% url 'userview:add_to_wishlist' %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
+                                <button type="submit" class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
                                     <i class="far fa-heart"></i>
                                 </button>
                             </form>
@@ -332,7 +325,7 @@
                             <form method="post" action="{% url 'userview:add_to_wishlist' %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
+                                <button type="submit" class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
                                     <i class="far fa-heart"></i>
                                 </button>
                             </form>

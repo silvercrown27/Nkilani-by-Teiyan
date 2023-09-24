@@ -136,7 +136,7 @@ $(document).ready(function () {
         e.preventDefault();
         var productId = $(this).data("product-id");
         $.ajax({
-            url: addToWishlistURL, // Use the JavaScript variable
+            url: "../add-to-wishlist/,
             type: "POST",
             data: {
                 csrfmiddlewaretoken: csrfToken,

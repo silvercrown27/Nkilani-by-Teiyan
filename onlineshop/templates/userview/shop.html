@@ -308,7 +308,7 @@
                                             </form>
                                             <form method="post" action="{% url 'userview:add_to_wishlist' %}">
                                                 {% csrf_token %}
-                                                <button class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
+                                                <button type="submit" class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
                                                     <i class="far fa-heart"></i>
                                                 </button>
                                             </form>

@@ -90,7 +90,7 @@
     <!-- Topbar End -->
 
 
-        <!-- Navbar Start -->
+    <!-- Navbar Start -->
     <div class="container-fluid bg-dark mb-30">
         <div class="row px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
@@ -247,18 +247,18 @@
                             <img class="img-fluid w-100" src="/media/{{product.image}}" style="height:400px;" alt="{{ product.name }}">
                         </a>
                         <div class="product-action">
-                            <form method="post" action="">
+                            <form method="post" action="{% url 'overview:add-to-cart' product.id %}">
                                 {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
                                 <button type="submit" class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ product.id }}">
                                     <i class="fa fa-shopping-cart"></i>
+                                    <script>var addToCartURL = {% url 'overview:add-to-cart' product.id %}</script>
                                 </button>
                             </form>
-                            <form method="post" action="">
+                            <form method="post" action="{% url 'overview:add-to-wishlist' product.id %}">
                                 {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
                                 <button type="submit" class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
                                     <i class="far fa-heart"></i>
+                                    <script>var addToWishlistURL = {% url 'overview:add-to-wishlist' product.id %}</script>
                                 </button>
                             </form>
                             <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
@@ -325,18 +325,17 @@
                             <img class="img-fluid w-100" src="/media/{{product.image}}" style="height:400px;" alt="{{ product.name }}">
                         </a>
                         <div class="product-action">
-                            <form method="post" action="">
+                            <form method="post" action="{% url 'overview:add-to-cart' product.id %}">
                                 {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button type="submit" class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ product.id }}">
-                                    <i class="fa fa-shopping-cart"></i>
+                                <button type="submit" class="btn btn-outline-dark btn-square">
+                                    <i class="fa fa-shopping-cart"></i> Add to Cart
                                 </button>
                             </form>
-                            <form method="post" action="">
+
+                            <form method="post" action="{% url 'overview:add-to-wishlist' product.id %}">
                                 {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button type="submit" class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
-                                    <i class="far fa-heart"></i>
+                                <button type="submit" class="btn btn-outline-dark btn-square">
+                                    <i class="fa fa-heart"></i> Add to Wishlist
                                 </button>
                             </form>
                             <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>

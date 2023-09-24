@@ -9,6 +9,16 @@
       <change beforePath="$PROJECT_DIR$/onlineshop/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/main/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/main/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/main/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/media/My Products/cat-1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/media/My Products/comfy hoody.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/media/My Products/prod-2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/media/My Products/prod-3.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/media/My Products/prod.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/media/My Products/prod7.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/media/My Products/product-4.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/media/My Products/product-7.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/nkilanidb.sqlite3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/static/js/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/cart-prev.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/cart-prev.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/checkout-prev.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/checkout-prev.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/contact-prev.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/contact-prev.html" afterDir="false" />
@@ -16,13 +26,9 @@
       <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/overview.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/overview.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/shop-prev.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/shop-prev.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/wishlist-prev.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/wishlist-prev.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/cart.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/cart.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/checkout.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/checkout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/contact.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/contact.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/detail.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/shop.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/shop.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/wishlist.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/wishlist.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/userview/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/userview/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

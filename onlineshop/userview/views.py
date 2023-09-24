@@ -1,3 +1,8 @@
+import requests
+import base64
+from datetime import datetime
+from decouple import config
+
 from django.contrib import messages
 from django.contrib.sites import requests
 from django.http import Http404, JsonResponse, HttpResponse
@@ -5,13 +10,8 @@ from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django_daraja.views import stk_push_callback_url
-import requests
-import base64
-from datetime import datetime
-from decouple import config
 
 from mpesa.core import MpesaClient
-
 from main.models import Customers, ContactUs
 from adminview.models import Product
 from .models import *
@@ -203,14 +203,15 @@ def add_to_wishlist(request):
         return redirect('/overview/')
 
     try:
+        print("Wishlist item start")
         customer = Customers.objects.get(user=user)
 
         if request.method == 'POST':
+            print("Wishlist item start")
             product_id = request.POST.get('product_id')
-            customer = Customers.objects.get(id=user.id)
 
             existing_wishlist_item = FavoriteProduct.objects.filter(user=customer, product_id=product_id)
-
+            print("Item aded to Wishlist")
             if existing_wishlist_item.exists():
                 existing_wishlist_item.delete()
                 return JsonResponse({'success': True, 'message': 'Product removed from wishlist'})
@@ -218,6 +219,7 @@ def add_to_wishlist(request):
                 FavoriteProduct.objects.create(user=customer, product_id=product_id)
                 return JsonResponse({'success': True, 'message': 'Product added to wishlist'})
         else:
+            print("failed to add wish...")
             return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
     except Customers.DoesNotExist:

@@ -38,15 +38,38 @@ class Customers(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
-class UserCartItem(models.Model):
+class SessionCart(models.Model):
     from adminview.models import Product
 
-    user_session = models.CharField(max_length=255)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    items = models.ManyToManyField(Product, through='SessionCartItem')
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.product.name
+        return f"Cart for {self.user.username if self.user else 'Guest'}"
+
+
+class SessionCartItem(models.Model):
+    from adminview.models import Product
+
+    cart = models.ForeignKey(SessionCart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name} in cart"
+
+
+class WishlistItem(models.Model):
+    from adminview.models import Product
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username if self.user else 'Guest'}'s Wishlist Item: {self.product.name}"
 
 
 class AccessToken(models.Model):
