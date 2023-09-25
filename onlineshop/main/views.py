@@ -1,6 +1,5 @@
 import json
 
-from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login as auth_login
 from django.shortcuts import get_object_or_404, render, redirect
@@ -21,34 +20,26 @@ def remove_media_root(file_paths):
 
 
 def add_to_cart(request, product_id):
-    # Get the product
     product = get_object_or_404(Product, id=product_id)
 
-    # Initialize an empty cart list from cookies or create one if it doesn't exist
     cart = request.COOKIES.get('cart', '{}')
     cart = json.loads(cart)
 
-    # Add the product to the cart or update the quantity if it already exists
     cart[str(product_id)] = cart.get(str(product_id), 0) + 1
 
-    # Update the cart in cookies
     response = JsonResponse({'success': True, 'message': 'Product added to cart'})
     response.set_cookie('cart', json.dumps(cart))
     return response
 
 
 def add_to_wishlist(request, product_id):
-    # Get the product
     product = get_object_or_404(Product, id=product_id)
 
-    # Initialize an empty wishlist list from cookies or create one if it doesn't exist
     wishlist = request.COOKIES.get('wishlist', '{}')
     wishlist = json.loads(wishlist)
 
-    # Add the product to the wishlist
     wishlist[str(product_id)] = product.name
 
-    # Update the wishlist in cookies
     response = JsonResponse({'success': True, 'message': 'Product added to wishlist'})
     response.set_cookie('wishlist', json.dumps(wishlist))
     return response
@@ -62,23 +53,22 @@ def landing_page(request):
 
 
 def cart_view(request):
-    # Initialize an empty cart list from cookies or create one if it doesn't exist
     cart = request.COOKIES.get('cart', '{}')
     cart = json.loads(cart)
 
-    # Retrieve product details for items in the cart
     cart_items = []
     total_price = 0
     for product_id, quantity in cart.items():
         product = get_object_or_404(Product, id=product_id)
         total_price += product.price * quantity
         cart_items.append({'product': product, 'quantity': quantity})
+    print("Cart Data from Cookies:", cart)
+    print("Cart Items:", cart_items)
 
     return render(request, "main/cart-prev.html", {'cart_items': cart_items, 'total_price': total_price})
 
 
 def wishlist_page(request):
-    # Initialize an empty wishlist list from cookies or create one if it doesn't exist
     wishlist = request.COOKIES.get('wishlist', '{}')
     wishlist = json.loads(wishlist)
 

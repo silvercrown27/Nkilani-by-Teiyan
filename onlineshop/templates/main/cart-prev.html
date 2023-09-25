@@ -156,7 +156,7 @@
     <!-- Breadcrumb End -->
 
 
-            <!-- Cart Start -->
+    <!-- Cart Start -->
     <div class="container-fluid">
         <div class="row px-xl-5">
             <div class="col-lg-8 table-responsive mb-5">
@@ -171,7 +171,7 @@
                         </tr>
                     </thead>
                     <tbody class="align-middle">
-                        {% for cart_item in session_cart_items %}
+                        {% for cart_item in cart_items %}
                         <tr>
                             <td class="align-middle">
                                 <img src="/media/{{ cart_item.product.image }}" alt="{{ cart_item.product.name }}" style="width: 50px;">
@@ -193,7 +193,9 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="align-middle">{{ cart_item.total }}</td>
+                            <td class="align-middle" id="prod-subtotal">
+                                <p>Result: {{ cart_item.product.price|mul:cart_item.quantity }}</p>
+                            </td>
                             <td class="align-middle">
                                 <button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
                             </td>
@@ -208,7 +210,7 @@
                     <div class="border-bottom pb-2">
                         <div class="d-flex justify-content-between mb-3">
                             <h6>Subtotal</h6>
-                            <h6>$150</h6>
+                            <h6 id="subtotal">$150</h6>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>
@@ -218,17 +220,34 @@
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
                             <h5>Total</h5>
-                            <h5>$160</h5>
+                            <!-- Display the calculated total here -->
+                            <h5 id="cart-total">{{ total_price }}</h5>
                         </div>
-                         <button type="submit" class="btn btn-block mb-2" >
-                  <a type="submit" class="btn btn-block btn-primary font-weight-bold my-3 py-3" href="/checkout">Proceed to Checkout</a>
-                         </button>
+                        <button type="submit" class="btn btn-block mb-2">
+                            <a type="submit" class="btn btn-block btn-primary font-weight-bold my-3 py-3" href="/checkout">Proceed to Checkout</a>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Cart End -->
+
+    <script>
+        // JavaScript to calculate and update the cart total
+        const itemTotals = document.querySelectorAll('.item-total');
+        const subtotalElement = document.getElementById('subtotal');
+        const cartTotalElement = document.getElementById('cart-total');
+
+        let subtotal = 0;
+
+        itemTotals.forEach((itemTotal) => {
+            subtotal += parseFloat(itemTotal.textContent.replace('$', ''));
+        });
+
+        cartTotalElement.textContent = `$${(subtotal + 10).toFixed(2)}`;
+    </script>
+
 
 
     <!-- Footer Start -->
