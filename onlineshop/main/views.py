@@ -1,15 +1,21 @@
+import base64
 import json
+from datetime import datetime
 
+import requests
+from decouple import config
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login as auth_login
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.conf import settings
+from django_daraja.views import stk_push_callback_url
 
 from .models import *
-from django.contrib.auth.models import User
+from mpesa.core import MpesaClient
 from adminview.models import Product
+from django.contrib.auth.models import User
 
 
 def remove_media_root(file_paths):
@@ -64,6 +70,7 @@ def cart_view(request):
         cart_items.append({'product': product, 'quantity': quantity})
     print("Cart Data from Cookies:", cart)
     print("Cart Items:", cart_items)
+    print(total_price)
 
     return render(request, "main/cart-prev.html", {'cart_items': cart_items, 'total_price': total_price})
 
@@ -72,7 +79,6 @@ def wishlist_page(request):
     wishlist = request.COOKIES.get('wishlist', '{}')
     wishlist = json.loads(wishlist)
 
-    # Retrieve product details for items in the wishlist
     wishlist_items = []
     for product_id, product_name in wishlist.items():
         product = get_object_or_404(Product, id=product_id)
@@ -86,7 +92,21 @@ def contact_page(request):
 
 
 def checkout_page(request):
-    return render(request, "main/checkout-prev.html")
+    cart = request.COOKIES.get('cart', '{}')
+    cart = json.loads(cart)
+
+    cart_items = []
+    total_price = 0
+
+    for product_id, quantity in cart.items():
+        product = get_object_or_404(Product, id=product_id)
+        subtotal = product.price * quantity
+        total_price += subtotal
+
+        cart_items.append({'product': product, 'quantity': quantity, 'subtotal': subtotal})
+    total_with_shipping = str(int(total_price + 10))
+
+    return render(request, "main/checkout-prev.html", {'cart_items': cart_items, 'total_price': total_with_shipping})
 
 
 def detail_page(request):
@@ -172,3 +192,55 @@ def newsletter(request):
 
         Newsletter.objects.create(email=email).save()
     return redirect("/")
+
+
+def submit_pay_details(request, total_price):
+    if request.method == "POST":
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        total = total_price
+
+        lipa_na_mpesa_online(phone, total)
+
+        return HttpResponse('success')
+    return redirect("overview:checkout-prev")
+
+
+def lipa_na_mpesa_online(number, total_amount):
+    cl = MpesaClient()
+    access_token = cl.access_token()
+    api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+    headers = {"Authorization": "Bearer %s" % access_token}
+
+    BusinessShortCode = config('MPESA_EXPRESS_SHORTCODE')
+
+    # Generate the password
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    passkey = config('MPESA_PASSKEY')
+    password = base64.b64encode((BusinessShortCode + passkey + timestamp).encode('ascii')).decode('utf-8')
+
+    PartyA = number
+    PartyB = BusinessShortCode
+    PhoneNumber = number
+    AccountReference = "Bradley"
+    TransactionDesc = "Testing stk push"
+
+    request_data = {
+        "BusinessShortCode": BusinessShortCode,
+        "Password": password,
+        "Timestamp": timestamp,
+        "TransactionType": "CustomerBuyGoodsOnline",
+        "Amount": total_amount,
+        "PartyA": PartyA,
+        "PartyB": PartyB,
+        "PhoneNumber": PhoneNumber,
+        "CallBackURL": stk_push_callback_url,
+        "AccountReference": AccountReference,
+        "TransactionDesc": TransactionDesc
+    }
+
+    resp = requests.post(api_url, json=request_data, headers=headers)
+    print(resp)
+    return HttpResponse('success')
