@@ -19,6 +19,9 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
     <!-- Libraries Stylesheet -->
     <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
     <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
@@ -26,8 +29,6 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
-
-
 <body>
    <!-- Topbar Start -->
     <div class="container-fluid">
@@ -308,14 +309,16 @@
                                     <div class="product-img position-relative overflow-hidden">
                                         <img class="img-fluid w-100" src="/media/{{product.image}}" style="height:280px;" alt="{{ product.name }}">
                                         <div class="product-action">
-                                            <form method="" action="">
+                                            <form method="post" action="{% url 'overview:add-to-cart' %}">
                                                 {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ product.id }}">
                                                 <button type="submit" class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ product.id }}">
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </button>
                                             </form>
-                                            <form method="" action="">
+                                            <form method="post" action="{% url 'overview:add-to-wishlist' %}">
                                                 {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ product.id }}">
                                                 <button type="submit" class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
                                                     <i class="far fa-heart"></i>
                                                 </button>
@@ -352,6 +355,72 @@
     <!-- Shop End -->
 
 
+   <script>
+        $(document).ready(function() {
+            // Get the CSRF token from the cookie.
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            $(".add-to-cart").click(function(e) {
+                e.preventDefault();
+                var productId = $(this).data("product-id");
+                $.ajax({
+                    url: "{% url 'overview:add-to-cart' %}",
+                    type: "POST",
+                    data: { product_id: productId },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Handle the success response here (e.g., update the cart icon, show a notification).
+                        } else {
+                            // Handle the failure response here (e.g., show an error message).
+                        }
+                    },
+                    error: function() {
+                        // Handle errors (e.g., show an error message).
+                    }
+                });
+            });
+
+            $(".add-to-wishlist").click(function(e) {
+                e.preventDefault();
+                var productId = $(this).data("product-id");
+                $.ajax({
+                    url: "{% url 'overview:add-to-wishlist' %}",
+                    type: "POST",
+                    data: { product_id: productId },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Handle the success response here (e.g., update the wishlist icon, show a notification).
+                        } else {
+                            // Handle the failure response here (e.g., show an error message).
+                        }
+                    },
+                    error: function() {
+                        // Handle errors (e.g., show an error message).
+                    }
+                });
+            });
+        });
+        </script>
 
 <!-- Footer Start -->
     <div class="container-fluid bg-dark text-secondary mt-5 pt-5">

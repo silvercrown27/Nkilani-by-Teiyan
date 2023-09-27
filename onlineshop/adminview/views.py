@@ -1,11 +1,12 @@
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from django.shortcuts import render
-
-from .models import Product
+from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 
 from PIL import Image
 import os
+
+from .models import Product
 
 
 class ImageResizer:
@@ -54,10 +55,11 @@ class ImageResizer:
 
 
 def admin_page(request, user):
-    return render(request, "adminview/admin section.html")
+    context = {"user": user}
+    return render(request, "adminview/admin section.html", context)
 
 
-def add_product(request, user):
+def add_product(request, logged_user):
     if request.method == "POST":
         name = request.POST.get('product_name')
         description = request.POST.get('product_description')
@@ -79,3 +81,8 @@ def add_product(request, user):
                                price=price, category=category)
 
     return render(request, 'adminview/admin section.html')
+
+
+def auto_logout(request):
+    logout(request)
+    return redirect('login')

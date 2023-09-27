@@ -5,7 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e8e711c6-2dc1-4017-be30-d02382d98831" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/adminview/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/adminview/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/adminview/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/adminview/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/main/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/main/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/nkilanidb.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/nkilanidb.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/templates/adminview/admin section.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/adminview/admin section.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/overview.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/overview.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/shop-prev.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/shop-prev.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

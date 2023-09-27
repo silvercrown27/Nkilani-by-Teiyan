@@ -25,30 +25,52 @@ def remove_media_root(file_paths):
     return file_paths[len_mr + 1:]
 
 
-def add_to_cart(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+def add_to_cart(request):
+    if request.method == "POST":
+        product_id = request.POST.get("product_id")
+        product = get_object_or_404(Product, id=product_id)
 
+        cart = request.COOKIES.get('cart', '{}')
+        cart = json.loads(cart)
+
+        cart[str(product_id)] = cart.get(str(product_id), 0) + 1
+
+        response = JsonResponse({'success': True, 'message': 'Product added to cart'})
+        response.set_cookie('cart', json.dumps(cart))
+
+        return response
+    return redirect("/")
+
+
+def add_to_wishlist(request):
+    if request.method == "POST":
+        product_id = request.POST.get("product_id")
+
+        product = get_object_or_404(Product, id=product_id)
+
+        wishlist = request.COOKIES.get('wishlist', '{}')
+        wishlist = json.loads(wishlist)
+
+        wishlist[str(product_id)] = product.name
+
+        response = JsonResponse({'success': True, 'message': 'Product added to wishlist'})
+        response.set_cookie('wishlist', json.dumps(wishlist))
+        return response
+    return redirect("/")
+
+
+def count_cart_items(request):
     cart = request.COOKIES.get('cart', '{}')
     cart = json.loads(cart)
-
-    cart[str(product_id)] = cart.get(str(product_id), 0) + 1
-
-    response = JsonResponse({'success': True, 'message': 'Product added to cart'})
-    response.set_cookie('cart', json.dumps(cart))
-    return response
+    total_items = sum(cart.values())
+    return JsonResponse({'total_items': total_items})
 
 
-def add_to_wishlist(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-
+def count_wishlist_items(request):
     wishlist = request.COOKIES.get('wishlist', '{}')
     wishlist = json.loads(wishlist)
-
-    wishlist[str(product_id)] = product.name
-
-    response = JsonResponse({'success': True, 'message': 'Product added to wishlist'})
-    response.set_cookie('wishlist', json.dumps(wishlist))
-    return response
+    total_items = len(wishlist)
+    return JsonResponse({'total_items': total_items})
 
 
 def landing_page(request):
@@ -216,7 +238,6 @@ def lipa_na_mpesa_online(number, total_amount):
 
     BusinessShortCode = config('MPESA_EXPRESS_SHORTCODE')
 
-    # Generate the password
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
     passkey = config('MPESA_PASSKEY')
     password = base64.b64encode((BusinessShortCode + passkey + timestamp).encode('ascii')).decode('utf-8')
