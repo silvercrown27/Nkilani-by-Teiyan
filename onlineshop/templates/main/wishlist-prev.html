@@ -19,6 +19,9 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
     <!-- Libraries Stylesheet -->
     <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
     <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
@@ -27,9 +30,8 @@
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
 
-
 <body>
-   <!-- Topbar Start -->
+  <!-- Topbar Start -->
     <div class="container-fluid">
         <div class="row bg-secondary py-1 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
@@ -105,7 +107,7 @@
                     <a href="" class="text-decoration-none d-block d-lg-none">
                        <span class="h1 text-primary bg-dark px-2">Nkilani</span>
                        <span class="h5 text-primary bg-transparent px-2">by</span>
-                       <span class="h1  text-dark bg-primary px-2 ml-n1">Teiyan</span>
+                       <span class="h1 text-dark bg-primary px-2 ml-n1">Teiyan</span>
                     </a>
                     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>
@@ -118,7 +120,7 @@
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages <i class="fa fa-angle-down mt-1"></i></a>
                                 <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
                                     <a href="{% url 'overview:cart-prev' %}" class="dropdown-item">Shopping Cart</a>
-                                    <a href="{% url 'overview:checkout-prev' %}" class="dropdown-item">Checkout</a>
+                                    <a href="{% url 'overview:wishlist-prev' %}" class="dropdown-item active">Wishlist</a>
                                 </div>
                             </div>
                             <a href="{% url 'overview:info' %}" class="nav-item nav-link">Contact</a>
@@ -126,19 +128,61 @@
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
                             <a href="{% url 'overview:wishlist-prev' %}" class="btn px-0">
                                 <i class="fas fa-heart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;" id="wishlist-count">0</span>
                             </a>
                             <a href="{% url 'overview:cart-prev' %}" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;" id="cart-count">0</span>
                             </a>
                         </div>
+                        <script>
+                            function updateCartAndWishlistCounts() {
+                                $.ajax({
+                                    url: "{% url 'overview:cart-items-count' %}",
+                                    type: "GET",
+                                    success: function(response) {
+                                        var cartCount = response.total_items;
+                                        $("#cart-count").text(cartCount);
+                                    }
+                                });
+
+                                $.ajax({
+                                    url: "{% url 'overview:wishlist-items-count' %}",
+                                    type: "GET",
+                                    success: function(response) {
+                                        var wishlistCount = response.total_items;
+                                        $("#wishlist-count").text(wishlistCount);
+                                    }
+                                });
+                            }
+
+                            // Call the function to update counts when the page loads
+                            $(document).ready(function() {
+                                updateCartAndWishlistCounts();
+                            });
+                        </script>
                     </div>
                 </nav>
             </div>
         </div>
     </div>
     <!-- Navbar End -->
+
+
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="#">Home</a>
+                    <a class="breadcrumb-item text-dark" href="#">Shop</a>
+                    <span class="breadcrumb-item active">Shopping Cart</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
 
       <!-- Wishlist Start -->
     <div class="container-fluid pt-5 pb-3">
