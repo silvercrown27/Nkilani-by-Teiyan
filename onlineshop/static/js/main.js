@@ -162,3 +162,48 @@ $(document).ready(function () {
     });
 });
 
+
+$(document).ready(function () {
+  function performSearch(searchText) {
+    var isShopPage = window.location.pathname === "/shop/" || window.location.pathname == "/overview/shop/";
+
+    $.ajax({
+      url: "{% url 'overview:search' %}",
+      type: "POST",
+      data: {
+        csrfmiddlewaretoken: csrfToken,
+        search_input: searchText,
+      },
+      success: function (response) {
+        // Clear the existing content
+        $("#page_contents").empty();
+
+        // Append the new products to the page
+        if (response.products.length > 0) {
+          $.each(response.products, function (index, product) {
+            var productHtml = `
+              <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                <!-- Your product HTML here -->
+              </div>`;
+            $("#page_contents").append(productHtml);
+          });
+        } else {
+          $("#page_contents").html("<p>No products found.</p>");
+        }
+      },
+      error: function () {
+        // Handle errors here (e.g., show an error message).
+        console.error("AJAX error: Unable to retrieve search results.");
+      },
+    });
+  }
+
+  // Handle the search form submission
+  $("form").submit(function (e) {
+    e.preventDefault(); // Prevent the form from submitting the traditional way
+
+    var searchText = $(this).find("input[name='search_input']").val();
+
+    performSearch(searchText);
+  });
+});

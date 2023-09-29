@@ -16,6 +16,7 @@ urlpatterns = [
     path('login-user', views.login, name="login"),
     path('register-user', views.register, name="register"),
     path('newsletter', views.newsletter, name="get-newsletter"),
+    path('search', views.search, name="search"),
     path('add-to-cart', views.add_to_cart, name="add-to-cart"),
     path('add-to-wishlist', views.add_to_wishlist, name="add-to-wishlist"),
     path('cart-items-count', views.count_cart_items, name="cart-items-count"),

@@ -73,14 +73,17 @@
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="">
+                  <form method="post" action="{% url 'overview:search' %}">
+                    {% csrf_token %}
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
-                        <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <i class="fa fa-search"></i>
-                            </span>
-                        </div>
+                        <input type="text" class="form-control" name="search_input" placeholder="Search for products">
+                        <button type="submit">
+                            <div class="input-group-append">
+                                <span class="input-group-text bg-transparent text-primary">
+                                    <i class="fa fa-search"></i>
+                                </span>
+                            </div>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -329,7 +332,7 @@
                     </div>
                     <!-- Products Start -->
                     <div class="container-fluid pt-5 pb-3">
-                        <div class="row px-xl-5">
+                        <div class="row px-xl-5" id="page_contents">
                             {% for product in products %}
                             <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                                 <div class="product-item bg-light mb-4">

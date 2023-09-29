@@ -73,14 +73,17 @@
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="">
+                  <form method="post" action="{% url 'overview:search' %}">
+                    {% csrf_token %}
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
-                        <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <i class="fa fa-search"></i>
-                            </span>
-                        </div>
+                        <input type="text" class="form-control" name="search_input" placeholder="Search for products">
+                        <button type="submit">
+                            <div class="input-group-append">
+                                <span class="input-group-text bg-transparent text-primary">
+                                    <i class="fa fa-search"></i>
+                                </span>
+                            </div>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -204,10 +207,38 @@
                             <label>E-mail</label>
                             <input class="form-control" type="text" id="email" name="email" placeholder="example@email.com" required>
                         </div>
-                        <div class="col-md-6 form-group">
+                         <div class="col-md-6 form-group">
                             <label>Mobile No</label>
-                            <input class="form-control" type="text" placeholder="+123 456 789">
+                            <input class="form-control" type="text" id="phone-input" name="number" placeholder="+123 456 789" required>
+                            <div id="phone-validation-msg" class="text-danger"></div>
                         </div>
+
+                        <script>
+                            // Function to validate the phone number format
+                            function validatePhoneNumber() {
+                                var phoneNumber = document.getElementById("phone-input").value;
+                                var phonePattern = /^\+\d{1,4}\d{1,20}$/; // Adjust the regular expression as needed
+
+                                if (phonePattern.test(phoneNumber)) {
+                                    document.getElementById("phone-validation-msg").textContent = "";
+                                    return true; // Valid format
+                                } else {
+                                    document.getElementById("phone-validation-msg").textContent = "Invalid phone number format";
+                                    return false; // Invalid format
+                                }
+                            }
+
+                            // Add a listener to validate the phone number when the input changes
+                            document.getElementById("phone-input").addEventListener("input", validatePhoneNumber);
+
+                            // Add a listener to the form to prevent submission if the format is invalid
+                            document.querySelector("form").addEventListener("submit", function(event) {
+                                if (!validatePhoneNumber()) {
+                                    event.preventDefault(); // Prevent form submission
+                                }
+                            });
+                        </script>
+
                         <div class="col-md-6 form-group">
                             <label>County</label>
                             <select class="custom-select">

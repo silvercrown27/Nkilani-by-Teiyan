@@ -216,17 +216,27 @@ def newsletter(request):
     return redirect("/")
 
 
+def search(request):
+    if request.method == "POST":
+        text = request.POST.get("search_input")
+        products = Product.objects.filter(name__icontains=text)
+    else:
+        products = []
+
+    return render(request, "main/shop-prev.html", {"products": products})
+
+
 def submit_pay_details(request, total_price):
     if request.method == "POST":
         firstname = request.POST.get('firstname')
         lastname = request.POST.get('lastname')
         email = request.POST.get('email')
-        phone = request.POST.get('phone')
+        phone = request.POST.get('number')
         total = total_price
 
-        lipa_na_mpesa_online(phone, total)
+        response = lipa_na_mpesa_online(phone, total)
 
-        return HttpResponse('success')
+        return HttpResponse(response)
     return redirect("overview:checkout-prev")
 
 
@@ -242,9 +252,11 @@ def lipa_na_mpesa_online(number, total_amount):
     passkey = config('MPESA_PASSKEY')
     password = base64.b64encode((BusinessShortCode + passkey + timestamp).encode('ascii')).decode('utf-8')
 
-    PartyA = number
+    PartyA = str(number)[1:]
+    print(number)
+    print(PartyA)
     PartyB = BusinessShortCode
-    PhoneNumber = number
+    PhoneNumber = PartyA
     AccountReference = "Bradley"
     TransactionDesc = "Testing stk push"
 
@@ -264,4 +276,4 @@ def lipa_na_mpesa_online(number, total_amount):
 
     resp = requests.post(api_url, json=request_data, headers=headers)
     print(resp)
-    return HttpResponse('success')
+    return HttpResponse(resp)
