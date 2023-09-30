@@ -32,3 +32,10 @@ class OfferedProduct(models.Model):
     def __str__(self):
         return self.product.name
 
+
+class ProductImage(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    image_path = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return self.product.name + " - " + str(self.id)

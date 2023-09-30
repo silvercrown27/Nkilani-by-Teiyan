@@ -13,7 +13,7 @@ from django_daraja.views import stk_push_callback_url
 
 from mpesa.core import MpesaClient
 from main.models import Customers, ContactUs
-from adminview.models import Product
+from adminview.models import Product, ProductImage
 from .models import *
 from .utils import verify_transaction, initialize_transaction
 
@@ -103,14 +103,20 @@ def detail_page(request, prodid):
         customer = Customers.objects.get(user=user)
         product = get_object_or_404(Product, id=prodid)
 
+        default_product_image = product.productimage_set.first()
+        product_images = ProductImage.objects.filter(product=product)
+
         reviews = Review.objects.filter(product=product)
         related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+
         context = {
             'user': user,
             "customer": customer,
             'product': product,
             'reviews': reviews,
             'related_products': related_products,
+            'default_product_image': default_product_image,
+            'product_images': product_images,
         }
         return render(request, "userview/detail.html", context)
 
@@ -156,7 +162,7 @@ def wishlist_page(request):
         return JsonResponse({'error': 'Customer not found'}, status=404)
 
 
-def initiate_payment(request):
+def initiate_payment(request, total_price):
     user = request.user
 
     if not request.user.is_authenticated:
@@ -165,18 +171,15 @@ def initiate_payment(request):
     try:
         customer = Customers.objects.get(user=user)
         if request.method == "POST":
-            # email = request.POST.get("email")
-            # amount = int(request.POST.get("amount")) * 100
-            #
-            # card_number = request.POST.get("cardNumber")
-            # expiration_month = request.POST.get("expirationMonth")
-            # expiration_year = request.POST.get("expirationYear")
-            # cvc = request.POST.get("cvc")
-            #
-            # response = initialize_transaction(email, amount, card_number, expiration_month, expiration_year, cvc)
-            #
-            # authorization_url = response['data']['authorization_url']
-            return redirect("userview:c2b-mpesa-transaction")
+            firstname = request.POST.get('firstname')
+            lastname = request.POST.get('lastname')
+            email = request.POST.get('email')
+            phone = request.POST.get('number')
+            total = total_price
+
+
+            response = lipa_na_mpesa_online(number, total_amount)
+            return
 
         return render(request, "userview/checkout.html")
 
@@ -288,7 +291,7 @@ def add_review(request, prodid):
         raise Http404(f"No user registered under the id {user.id}")
 
 
-def lipa_na_mpesa_online(request):
+def lipa_na_mpesa_online(number, total_amount):
     cl = MpesaClient()
     access_token = cl.access_token()
     api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
@@ -296,14 +299,15 @@ def lipa_na_mpesa_online(request):
 
     BusinessShortCode = config('MPESA_EXPRESS_SHORTCODE')
 
-    # Generate the password
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
     passkey = config('MPESA_PASSKEY')
     password = base64.b64encode((BusinessShortCode + passkey + timestamp).encode('ascii')).decode('utf-8')
 
-    PartyA = "254743687737"
+    PartyA = str(number)[1:]
+    print(number)
+    print(PartyA)
     PartyB = BusinessShortCode
-    PhoneNumber = "254743687737"
+    PhoneNumber = PartyA
     AccountReference = "Bradley"
     TransactionDesc = "Testing stk push"
 
@@ -312,7 +316,7 @@ def lipa_na_mpesa_online(request):
         "Password": password,
         "Timestamp": timestamp,
         "TransactionType": "CustomerBuyGoodsOnline",
-        "Amount": 1,
+        "Amount": total_amount,
         "PartyA": PartyA,
         "PartyB": PartyB,
         "PhoneNumber": PhoneNumber,
@@ -323,7 +327,7 @@ def lipa_na_mpesa_online(request):
 
     resp = requests.post(api_url, json=request_data, headers=headers)
     print(resp)
-    return HttpResponse('success')
+    return HttpResponse(resp)
 
 
 def contactus(request):

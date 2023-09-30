@@ -371,26 +371,27 @@
             <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                 <div class="product-item bg-light mb-4">
                     <div class="product-img position-relative overflow-hidden">
-                        <a href="{% url 'userview:prod-detail' prodid=product.id %}">
+
                             <img class="img-fluid w-100" src="/media/{{product.image}}" style="height:400px;" alt="{{ product.name }}">
-                        </a>
                         <div class="product-action">
-                            <form method="post" action="{% url 'overview:add-to-cart' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button type="submit" class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ product.id }}">
-                                    <i class="fa fa-shopping-cart"></i>
-                                </button>
-                            </form>
-                            <form method="post" action="{% url 'overview:add-to-wishlist' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button type="submit" class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </form>
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                            <a href="{% url 'userview:prod-detail' prodid=product.id %}">
+                                <form method="post" action="{% url 'overview:add-to-cart' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <button type="submit" class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ product.id }}">
+                                        <i class="fa fa-shopping-cart"></i>
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'overview:add-to-wishlist' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <button type="submit" class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ product.id }}">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </form>
+                                <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                            </a>
                         </div>
                     </div>
                     <div class="text-center py-4">
