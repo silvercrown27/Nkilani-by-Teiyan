@@ -4,6 +4,7 @@ from datetime import datetime
 from decouple import config
 
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.sites import requests
 from django.http import Http404, JsonResponse, HttpResponse
 from django.conf import settings
@@ -102,6 +103,7 @@ def detail_page(request, prodid):
     try:
         customer = Customers.objects.get(user=user)
         product = get_object_or_404(Product, id=prodid)
+        products = Product.objects.all()
 
         default_product_image = product.productimage_set.first()
         product_images = ProductImage.objects.filter(product=product)
@@ -113,6 +115,7 @@ def detail_page(request, prodid):
             'user': user,
             "customer": customer,
             'product': product,
+            'products': products,
             'reviews': reviews,
             'related_products': related_products,
             'default_product_image': default_product_image,
@@ -170,16 +173,15 @@ def initiate_payment(request, total_price):
 
     try:
         customer = Customers.objects.get(user=user)
+
         if request.method == "POST":
             firstname = request.POST.get('firstname')
             lastname = request.POST.get('lastname')
             email = request.POST.get('email')
             phone = request.POST.get('number')
-            total = total_price
 
-
-            response = lipa_na_mpesa_online(number, total_amount)
-            return
+            response = lipa_na_mpesa_online(phone, total_price)
+            return response
 
         return render(request, "userview/checkout.html")
 
@@ -341,3 +343,11 @@ def contactus(request):
         print(f"message from {name} has been sent!")
 
     return redirect("userview:contact")
+
+
+def logout_user(request):
+    try:
+        logout(request)
+        return redirect('main:landing_page')
+    except:
+        return redirect('main:landing_page')

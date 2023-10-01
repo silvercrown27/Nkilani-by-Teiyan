@@ -22,4 +22,5 @@ urlpatterns = [
     path('add-to-wishlist/', views.add_to_wishlist, name='add_to_wishlist'),
     path('<str:prodid>-review/', views.add_review, name='add-review'),
     path('contactus/', views.contactus, name="contactus"),
+    path('logout-user/', views.logout_user, name="logout"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

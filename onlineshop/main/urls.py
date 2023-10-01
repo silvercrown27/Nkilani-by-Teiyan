@@ -6,7 +6,7 @@ app_name = "overview"
 urlpatterns = [
     path('', views.landing_page, name="landing_page"),
     path('contact', views.contact_page, name="info"),
-    path('detail', views.detail_page, name="detail-prev"),
+    path('<int:prodid>/detail', views.detail_page, name="detail-prev"),
     path('cart', views.cart_view, name="cart-prev"),
     path('wishlist', views.wishlist_page, name="wishlist-prev"),
     path('shop', views.shop_page, name="shop-prev"),
@@ -21,6 +21,7 @@ urlpatterns = [
     path('add-to-wishlist', views.add_to_wishlist, name="add-to-wishlist"),
     path('cart-items-count', views.count_cart_items, name="cart-items-count"),
     path("wishlist-items-count", views.count_wishlist_items, name="wishlist-items-count"),
+    path("filter-products", views.filter_products, name="filter-products"),
     path("<str:total_price>/pay", views.submit_pay_details, name="submit_pay_details")
 ]
 

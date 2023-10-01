@@ -14,7 +14,8 @@ from django_daraja.views import stk_push_callback_url
 
 from .models import *
 from mpesa.core import MpesaClient
-from adminview.models import Product
+from adminview.models import Product, ProductImage, ProductProperties
+from userview.models import Review
 from django.contrib.auth.models import User
 
 
@@ -131,8 +132,24 @@ def checkout_page(request):
     return render(request, "main/checkout-prev.html", {'cart_items': cart_items, 'total_price': total_with_shipping})
 
 
-def detail_page(request):
-    return render(request, "main/detail-prev.html")
+def detail_page(request, prodid):
+    product = get_object_or_404(Product, id=prodid)
+    try:
+        product_properties = ProductProperties.objects.get(product=product)
+    except ProductProperties.DoesNotExist:
+        product_properties = None
+
+    print(f"Product: {product}")
+
+    reviews = Review.objects.filter(product=product)
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+    context = {
+        'product': product,
+        'product_properties': product_properties,
+        'reviews': reviews,
+        'related_products': related_products,
+    }
+    return render(request, "main/detail-prev.html", context)
 
 
 def shop_page(request):
@@ -175,6 +192,55 @@ def register(request):
             return render(request, 'main/sign up.html', {'error_message': error_message})
 
     return render(request, 'main/Sign up.html')
+
+
+from django.shortcuts import render, redirect
+from .models import Product, ProductProperties
+from django.http import JsonResponse
+
+
+def filter_products(request):
+    if request.method == "POST":
+        selected_prices = request.POST.getlist("price")
+        selected_colors = request.POST.getlist("color")
+        selected_sizes = request.POST.getlist("size")
+
+        filters = {}
+        if selected_prices:
+            price_ranges = []
+            for selected_price in selected_prices:
+                if selected_price == "price_category1":
+                    price_ranges.append("$0 - $100")
+                elif selected_price == "price_category2":
+                    price_ranges.append("$100 - $200")
+                elif selected_price == "price_category3":
+                    price_ranges.append("$200 - $300")
+                elif selected_price == "price_category4":
+                    price_ranges.append("$300+")
+            filters["product__properties__price__in"] = price_ranges
+
+        if selected_colors:
+            filters["product__properties__color__in"] = selected_colors
+
+        if selected_sizes:
+            filters["product__properties__size__in"] = selected_sizes
+
+        filtered_properties = ProductProperties.objects.filter(**filters)
+        filtered_products = [prop.product for prop in filtered_properties]
+
+        data = [
+            {
+                "name": product.name,
+                "price": product.properties.price,
+                "color": product.properties.color,
+                "size": product.properties.size
+            }
+            for product in filtered_products
+        ]
+
+        return JsonResponse({"products": data})
+
+    return redirect("main:shop-prev")
 
 
 def login(request):

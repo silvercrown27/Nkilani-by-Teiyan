@@ -24,7 +24,10 @@ SECRET_KEY = 'django-insecure-^p+nyd_iy5)e2o=$myt$2gn0o@t5&#%ilx2k1!g_4s3(3c2w%5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*',
+    'https://c4ec-105-61-15-205.ngrok-free.app',
+    'localhost'
+]
 
 # Application definition
 
@@ -50,6 +53,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+        '*',
+    'https://c4ec-105-61-15-205.ngrok-free.app',
 ]
 
 ROOT_URLCONF = 'onlineshop.urls'
