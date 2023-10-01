@@ -194,11 +194,6 @@ def register(request):
     return render(request, 'main/Sign up.html')
 
 
-from django.shortcuts import render, redirect
-from .models import Product, ProductProperties
-from django.http import JsonResponse
-
-
 def filter_products(request):
     if request.method == "POST":
         selected_prices = request.POST.getlist("price")

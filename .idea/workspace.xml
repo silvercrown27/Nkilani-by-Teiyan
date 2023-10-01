@@ -6,20 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e8e711c6-2dc1-4017-be30-d02382d98831" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/adminview/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/adminview/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/main/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onlineshop/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/main/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/nkilanidb.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/nkilanidb.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/onlineshop/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/onlineshop/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/detail-prev.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/detail-prev.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/overview.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/overview.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/main/shop-prev.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/main/shop-prev.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/templates/userview/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/templates/userview/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/userview/templatetags/custom_filters.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/main/templatetags/custom_filters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/userview/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/userview/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineshop/userview/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineshop/userview/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,16 +37,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/brada/Documents/GitHub/Nkilani-by-Teiyan/onlineshop/main",
-    "settings.editor.selected.configurable": "reference.settings.ide.settings.new.ui"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/brada/Documents/GitHub/Nkilani-by-Teiyan/onlineshop/main&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.new.ui&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\brada\Documents\GitHub\Nkilani-by-Teiyan\onlineshop\main" />
