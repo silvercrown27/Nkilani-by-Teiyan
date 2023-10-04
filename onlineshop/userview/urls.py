@@ -13,13 +13,14 @@ urlpatterns = [
     path('cart/', views.cart_page, name="user-cart"),
     path('shop/', views.shop_page, name="user-shop"),
     path('checkout/', views.checkout_page, name="user-checkout"),
-
-    path('initiate-payment/', views.initiate_payment, name='initiate_payment'),
+    path("search/", views.search, name="search"),
+    path('<str:total_cost>/initiate-payment/', views.initiate_payment, name='initiate_payment'),
     path('verify-payment/', views.verify_payment, name='verify-payment'),
     path('c2b-mp-pay/', views.lipa_na_mpesa_online, name='c2b-mpesa-transaction'),
-
     path('add-to-cart/', views.add_to_cart, name='add_to_cart'),
     path('add-to-wishlist/', views.add_to_wishlist, name='add_to_wishlist'),
+    path("wishlist-items-count", views.wishlist_items_count, name="wishlist-items-count"),
+    path("cart-items-count", views.cart_items_count, name="cart-items-count"),
     path('<str:prodid>-review/', views.add_review, name='add-review'),
     path('contactus/', views.contactus, name="contactus"),
     path('logout-user/', views.logout_user, name="logout"),

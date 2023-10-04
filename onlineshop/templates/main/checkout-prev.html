@@ -31,7 +31,7 @@
 </head>
 
 <body>
-  <!-- Topbar Start -->
+    <!-- Topbar Start -->
     <div class="container-fluid">
         <div class="row bg-secondary py-1 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
@@ -53,13 +53,13 @@
                     </div>
                 </div>
                 <div class="d-inline-flex align-items-center d-block d-lg-none">
-                    <a href="/wishlist" class="btn px-0 ml-2" >
+                    <a href="{% url 'overview:wishlist-prev' %}" class="btn px-0 ml-2">
                         <i class="fas fa-heart text-dark"></i>
-                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
+                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;" id="wishlist-count2">0</span>
                     </a>
-                    <a href="/cart" class="btn px-0 ml-2">
+                    <a href="{% url 'overview:cart-prev' %}" class="btn px-0 ml-2">
                         <i class="fas fa-shopping-cart text-dark"></i>
-                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
+                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;" id="cart-count2">0</span>
                     </a>
                 </div>
             </div>
@@ -77,13 +77,13 @@
                     {% csrf_token %}
                     <div class="input-group">
                         <input type="text" class="form-control" name="search_input" placeholder="Search for products">
-                        <button type="submit">
+                        <a type="submit">
                             <div class="input-group-append">
                                 <span class="input-group-text bg-transparent text-primary">
                                     <i class="fa fa-search"></i>
                                 </span>
                             </div>
-                        </button>
+                        </a>
                     </div>
                 </form>
             </div>
@@ -146,6 +146,7 @@
                                     success: function(response) {
                                         var cartCount = response.total_items;
                                         $("#cart-count").text(cartCount);
+                                        $("#cart-count2").text(cartCount);
                                     }
                                 });
 
@@ -155,6 +156,7 @@
                                     success: function(response) {
                                         var wishlistCount = response.total_items;
                                         $("#wishlist-count").text(wishlistCount);
+                                        $("#wishlist-count2").text(wishlistCount);
                                     }
                                 });
                             }
@@ -257,8 +259,8 @@
                         </div>
                         <script src="https://js.paystack.co/v1/inline.js"></script>
                     </form>
-
                 </div>
+
                 <div class="collapse mb-5" id="shipping-address">
                     <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Shipping Address</span></h5>
                     <div class="bg-light p-30">
@@ -291,9 +293,6 @@
                                 <label>Country</label>
                                 <select class="custom-select">
                                     <option selected>Kenya</option>
-                                    <option>Uganda</option>
-                                    <option>Tanzania</option>
-                                    <option>Ethiopia</option>
                                 </select>
                             </div>
                             <div class="col-md-6 form-group">

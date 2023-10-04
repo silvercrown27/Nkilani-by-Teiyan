@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+from pyngrok import ngrok
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,10 +25,17 @@ SECRET_KEY = 'django-insecure-^p+nyd_iy5)e2o=$myt$2gn0o@t5&#%ilx2k1!g_4s3(3c2w%5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*',
-    'https://c4ec-105-61-15-205.ngrok-free.app',
-    'localhost'
-]
+# Determine whether ngrok is running based on an environment variable or other conditions.
+ngrok_enabled = os.environ.get("USE_NGROK", "False") == "True"
+
+# Use a fixed URL or your production domain if ngrok is not enabled
+if ngrok_enabled:
+
+    public_url = ngrok.connect(port=4040)
+else:
+    public_url = "https://localhost"
+
+ALLOWED_HOSTS = [public_url.replace("https://", "").replace("http://", ""), 'localhost', '127.0.0.1', '.ngrok.io', '.ngrok-free.app']
 
 # Application definition
 
@@ -55,11 +63,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-        '*',
-    'https://c4ec-105-61-15-205.ngrok-free.app',
-]
-
+# Set CORS_ALLOWED_ORIGINS to include the ngrok URL
+CORS_ALLOWED_ORIGINS = [str(public_url.replace("https://", "").replace("http://", "")), 'localhost', '127.0.0.1', '.ngrok.io', '.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ["https://*.ngrok-free.app"]
 ROOT_URLCONF = 'onlineshop.urls'
 
 TEMPLATES = [

@@ -5,6 +5,7 @@ from datetime import datetime
 import requests
 from decouple import config
 from django.db import IntegrityError
+from django.db.models import Q
 from django.contrib.auth import authenticate, login as auth_login
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse, HttpResponse
@@ -196,46 +197,56 @@ def register(request):
 
 def filter_products(request):
     if request.method == "POST":
-        selected_prices = request.POST.getlist("price")
-        selected_colors = request.POST.getlist("color")
-        selected_sizes = request.POST.getlist("size")
+        selected_prices = request.POST.getlist("price_category")
+        selected_colors = request.POST.getlist("color_category")
+        selected_sizes = request.POST.getlist("size_category")
 
         filters = {}
+        filtered_products = []
+
         if selected_prices:
             price_ranges = []
             for selected_price in selected_prices:
                 if selected_price == "price_category1":
-                    price_ranges.append("$0 - $100")
+                    price_ranges.append((0, 100))
                 elif selected_price == "price_category2":
-                    price_ranges.append("$100 - $200")
+                    price_ranges.append((100, 200))
                 elif selected_price == "price_category3":
-                    price_ranges.append("$200 - $300")
+                    price_ranges.append((200, 300))
                 elif selected_price == "price_category4":
-                    price_ranges.append("$300+")
-            filters["product__properties__price__in"] = price_ranges
+                    price_ranges.append((300, float('inf')))
+            if price_ranges:
+                price_q = Q()
+                for price_range in price_ranges:
+                    price_q |= Q(price__range=price_range)
+                filtered_products = Product.objects.filter(price_q)
+            else:
+                filtered_products = Product.objects.all()
 
         if selected_colors:
-            filters["product__properties__color__in"] = selected_colors
+            filters["productproperties__colors__name__in"] = selected_colors
 
         if selected_sizes:
-            filters["product__properties__size__in"] = selected_sizes
+            filters["productproperties__sizes__name__in"] = selected_sizes
 
-        filtered_properties = ProductProperties.objects.filter(**filters)
-        filtered_products = [prop.product for prop in filtered_properties]
+        if not selected_prices and not selected_colors and not selected_sizes:
+            filtered_products = Product.objects.all()
 
         data = [
             {
+                "id": product.id,
+                "image": product.image,
                 "name": product.name,
-                "price": product.properties.price,
-                "color": product.properties.color,
-                "size": product.properties.size
+                "price": product.price,
+                "color": ", ".join(product.productproperties_set.first().colors.values_list("name", flat=True)) if product.productproperties_set.exists() else None,
+                "size": ", ".join(product.productproperties_set.first().sizes.values_list("name", flat=True)) if product.productproperties_set.exists() else None
             }
             for product in filtered_products
         ]
 
-        return JsonResponse({"products": data})
+        return render(request, "main/shop-prev.html", {"products": data})
 
-    return redirect("main:shop-prev")
+    return redirect("overview:shop-prev")
 
 
 def login(request):
@@ -284,7 +295,7 @@ def search(request):
     else:
         products = []
 
-    return render(request, "main/shop-prev.html", {"products": products})
+    return render(request, "overview/shop-prev.html", {"products": products})
 
 
 def submit_pay_details(request, total_price):
@@ -295,13 +306,13 @@ def submit_pay_details(request, total_price):
         phone = request.POST.get('number')
         total = total_price
 
-        response = lipa_na_mpesa_online(phone, total)
+        response = lipa_na_mpesa_online(phone, total, firstname)
 
         return HttpResponse(response)
     return redirect("overview:checkout-prev")
 
 
-def lipa_na_mpesa_online(number, total_amount):
+def lipa_na_mpesa_online(number, total_amount, name):
     cl = MpesaClient()
     access_token = cl.access_token()
     api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
@@ -318,7 +329,7 @@ def lipa_na_mpesa_online(number, total_amount):
     print(PartyA)
     PartyB = BusinessShortCode
     PhoneNumber = PartyA
-    AccountReference = "Bradley"
+    AccountReference = f"{name}"
     TransactionDesc = "Testing stk push"
 
     request_data = {

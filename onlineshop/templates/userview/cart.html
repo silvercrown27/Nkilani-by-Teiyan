@@ -62,14 +62,17 @@
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="">
+                <form method="post" action="{% url 'userview:search' %}">
+                    {% csrf_token %}
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
-                        <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <i class="fa fa-search"></i>
-                            </span>
-                        </div>
+                        <input type="text" class="form-control" name="search_input" placeholder="Search for products">
+                        <a type="submit">
+                            <div class="input-group-append">
+                                <span class="input-group-text bg-transparent text-primary">
+                                    <i class="fa fa-search"></i>
+                                </span>
+                            </div>
+                        </a>
                     </div>
                 </form>
             </div>
@@ -118,13 +121,42 @@
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
                             <a href="{% url 'userview:user-wishlist' %}" class="btn px-0">
                                 <i class="fas fa-heart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;" id="wishlist-count">0</span>
                             </a>
                             <a href="{% url 'userview:user-cart' %}" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;" id="cart-count">0</span>
                             </a>
                         </div>
+                        <script>
+                            function updateCartAndWishlistCounts() {
+                                $.ajax({
+                                    url: "{% url 'userview:cart-items-count' %}",
+                                    type: "GET",
+                                    success: function(response) {
+                                        var cartCount = response.total_items;
+                                        $("#cart-count").text(cartCount);
+                                        $("#cart-count2").text(cartCount);
+                                    }
+                                });
+
+                                $.ajax({
+                                    url: "{% url 'userview:wishlist-items-count' %}",
+                                    type: "GET",
+                                    success: function(response) {
+                                        var wishlistCount = response.total_items;
+                                        $("#wishlist-count").text(wishlistCount);
+                                        $("#wishlist-count2").text(wishlistCount);
+
+                                    }
+                                });
+                            }
+
+                            // Call the function to update counts when the page loads
+                            $(document).ready(function() {
+                                updateCartAndWishlistCounts();
+                            });
+                        </script>
                     </div>
                 </nav>
             </div>
@@ -199,17 +231,17 @@
                     <div class="border-bottom pb-2">
                         <div class="d-flex justify-content-between mb-3">
                             <h6>Subtotal</h6>
-                            <h6>$150</h6>
+                            <h6>{{ subtotal }}.00</h6>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$10</h6>
+                            <h6 class="font-weight-medium">$ 1.00</h6>
                         </div>
                     </div>
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
-                            <h5>Total</h5>
-                            <h5>$160</h5>
+                            <h5>Grand Total</h5>
+                            <h5>{{ total_cost }}.00</h5>
                         </div>
                          <button type="submit" class="btn btn-block mb-2" >
                   <a type="submit" class="btn btn-block btn-primary font-weight-bold my-3 py-3" href="/checkout">Proceed to Checkout</a>

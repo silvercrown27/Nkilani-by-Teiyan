@@ -5,7 +5,6 @@ from decouple import config
 
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.contrib.sites import requests
 from django.http import Http404, JsonResponse, HttpResponse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
@@ -55,8 +54,15 @@ def cart_page(request):
 
         cart = Cart.objects.get(customer=customer)
         cart_items = CartItem.objects.filter(cart=cart) if cart else []
+        subtotal = sum([cart.total for cart in cart_items]).__round__(0)
+        totalcost = subtotal + 1
 
-        context = {'user': user, 'cart_items': cart_items, "customer": customer}
+        context = {'user': user,
+                   'cart_items': cart_items,
+                   "customer": customer,
+                   "subtotal": subtotal,
+                   "total_cost": totalcost
+                   }
 
         return render(request, "userview/cart.html", context)
 
@@ -86,7 +92,18 @@ def checkout_page(request):
 
     try:
         customer = Customers.objects.get(user=user)
-        context = {'user': user, "customer": customer}
+
+        cart = Cart.objects.get(customer=customer)
+        cart_items = CartItem.objects.filter(cart=cart) if cart else []
+        subtotal = sum([cart.total for cart in cart_items]).__round__(0)
+        totalcost = subtotal + 1
+
+        context = {'user': user,
+                   'cart_items': cart_items,
+                   "customer": customer,
+                   "subtotal": subtotal,
+                   "total_cost": totalcost
+                   }
 
         return render(request, "userview/checkout.html", context)
 
@@ -165,7 +182,7 @@ def wishlist_page(request):
         return JsonResponse({'error': 'Customer not found'}, status=404)
 
 
-def initiate_payment(request, total_price):
+def initiate_payment(request, total_cost):
     user = request.user
 
     if not request.user.is_authenticated:
@@ -180,7 +197,7 @@ def initiate_payment(request, total_price):
             email = request.POST.get('email')
             phone = request.POST.get('number')
 
-            response = lipa_na_mpesa_online(phone, total_price)
+            response = lipa_na_mpesa_online(phone, total_cost, firstname)
             return response
 
         return render(request, "userview/checkout.html")
@@ -293,7 +310,7 @@ def add_review(request, prodid):
         raise Http404(f"No user registered under the id {user.id}")
 
 
-def lipa_na_mpesa_online(number, total_amount):
+def lipa_na_mpesa_online(number, total_amount, name):
     cl = MpesaClient()
     access_token = cl.access_token()
     api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
@@ -310,7 +327,7 @@ def lipa_na_mpesa_online(number, total_amount):
     print(PartyA)
     PartyB = BusinessShortCode
     PhoneNumber = PartyA
-    AccountReference = "Bradley"
+    AccountReference = f"{name}"
     TransactionDesc = "Testing stk push"
 
     request_data = {
@@ -345,9 +362,45 @@ def contactus(request):
     return redirect("userview:contact")
 
 
+def cart_items_count(request):
+    if request.user.is_authenticated:
+        user = request.user
+        try:
+            customer = Customers.objects.get(user=user)
+            cart_items_count = CartItem.objects.filter(cart__customer=customer).count()
+            return JsonResponse({'total_items': cart_items_count})
+        except Customers.DoesNotExist:
+            pass
+    return JsonResponse({'total_items': 0})
+
+
+def wishlist_items_count(request):
+    if request.user.is_authenticated:
+        user = request.user
+        try:
+            customer = Customers.objects.get(user=user)
+            wishlist_items_count = FavoriteProduct.objects.filter(user=customer).count()
+            return JsonResponse({'total_items': wishlist_items_count})
+        except Customers.DoesNotExist:
+            pass
+    return JsonResponse({'total_items': 0})
+
+
+def search(request):
+    if request.method == "POST":
+        text = request.POST.get("search_input")
+        products = Product.objects.filter(name__icontains=text)
+    else:
+        products = []
+
+    template = "userview/shop.html"
+
+    return render(request, template, {"products": products})
+
+
 def logout_user(request):
     try:
         logout(request)
-        return redirect('main:landing_page')
+        return redirect('overview:landing_page')
     except:
-        return redirect('main:landing_page')
+        return redirect('overview:landing_page')
