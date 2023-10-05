@@ -259,7 +259,7 @@ def login(request):
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 auth_login(request, user)
-                admin_url = reverse('adminview:admin-home', args=[user.username])
+                admin_url = reverse('adminview:admin-home')
                 return redirect(admin_url)
             else:
                 return JsonResponse({'error': 'Incorrect Email or Password'}, status=400)

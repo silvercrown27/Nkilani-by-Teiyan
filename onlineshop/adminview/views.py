@@ -6,60 +6,78 @@ from django.contrib.auth import logout
 from PIL import Image
 import os
 
-from .models import Product
+from .models import *
 
 
-class ImageResizer:
-    def __init__(self, image_path):
-        self.image = image_path
-        self.iterate_items(self.image)
+def admin_page(request):
+    user = request.user
 
-    def resize_image(self, input_path, output_path, new_width, new_height):
-        try:
-            with Image.open(input_path) as img:
-                img.thumbnail((new_width, new_height))
-                default_path = "My Products"
-                fs = FileSystemStorage()
-                file_path = os.path.join(settings.MEDIA_ROOT, default_path)
-                output_file_path = os.path.join(file_path, output_path)
-
-                fs.save(output_file_path, img)
-                print(f"Image resized and saved as {output_file_path}")
-
-        except IOError:
-            print("Unable to resize image.")
-
-    def is_image(self, file_path):
-        try:
-            with Image.open(file_path) as img:
-                return True
-        except (OSError, Image.UnidentifiedImageError):
-            return False
-
-    def iterate_items(self, path):
-        try:
-            output_dir = os.path.join(path, self.image)
-            os.makedirs(output_dir, exist_ok=True)
-
-            for item in os.listdir(path):
-                item_path = os.path.join(path, item)
-                if os.path.isfile(item_path):
-                    if self.is_image(item_path):
-                        output_path = os.path.join(output_dir, item)
-                        self.resize_image(item_path, output_path, 840, 1280)
-                    else:
-                        print(f"Found non-image file: {item_path}")
-
-        except OSError as e:
-            print(f"Error: {e}")
+    products = Product.objects.all()
+    context = {"user": user, "products": products}
+    return render(request, "adminview/home_page.html", context)
 
 
-def admin_page(request, user):
-    context = {"user": user}
-    return render(request, "adminview/admin section.html", context)
+def add_featured_product(request):
+    products = Product.objects.all()
+    context = {"products": products}
+
+    return render(request, "adminview/add-to-featured.html", context)
 
 
-def add_product(request, logged_user):
+def edit_product_details(request, prodid):
+    product = Product.objects.get(id=prodid)
+    context = {"product": product}
+
+    return render(request, "adminview/edit-product.html", context)
+
+
+def update_product(request, prodid):
+    try:
+        product = Product.objects.get(id=prodid)
+
+        if request.method == "POST":
+            name = request.POST.get("product_name")
+            description = request.POST.get("product_description")
+            price = request.POST.get("product_price")
+            quantity = request.POST.get("product_quantity")
+
+            product.name = name
+            product.description = description
+            product.price = price
+            product.quantity = quantity
+            product.save()
+
+            return redirect("adminview:admin-home")
+
+    except Product.DoesNotExist:
+        return redirect("adminview:admin-home")
+
+
+def delete_product(request, prodid):
+    try:
+        product = Product.objects.get(id=prodid)
+        product.delete()
+        return redirect("adminview:admin-home")
+
+    except Product.DoesNotExist:
+        return redirect("adminview:admin-home")
+
+
+def add_featured(request, prodid):
+    product = Product.objects.get(id=prodid)
+
+    FeaturedProduct.objects.create(product=product)
+    return redirect("adminview:admin-home")
+
+
+def create_offer(request, prodid):
+    product = Product.objects.get(id=prodid)
+
+    OfferedProduct.objects.create(product=product)
+    return redirect("adminview:admin-home")
+
+
+def add_product(request, user):
     if request.method == "POST":
         name = request.POST.get('product_name')
         description = request.POST.get('product_description')
@@ -75,7 +93,10 @@ def add_product(request, logged_user):
         fs = FileSystemStorage()
         file_path = os.path.join(settings.MEDIA_ROOT, default_path, image.name)
         fs.save(file_path, image)
-        ImageResizer(file_path)
+
+        img = Image.open(file_path)
+        img.thumbnail((550, 700), Image.Resampling.LANCZOS)
+        img.save(file_path)
 
         Product.objects.create(name=name, description=description, image=os.path.join(default_path, image.name),
                                price=price, category=category)
@@ -83,6 +104,9 @@ def add_product(request, logged_user):
     return render(request, 'adminview/admin section.html')
 
 
-def auto_logout(request):
-    logout(request)
-    return redirect('login')
+def logout_user(request):
+    try:
+        logout(request)
+        return redirect('overview:landing_page')
+    except:
+        return redirect('overview:landing_page')

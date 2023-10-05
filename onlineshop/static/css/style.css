@@ -59,6 +59,7 @@ body {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
+  max-width:100%;
   color: #6C757D;
   text-align: left;
   background-color: #F5F5F5;
@@ -1652,6 +1653,15 @@ pre code {
 .table-hover .table-success:hover > td,
 .table-hover .table-success:hover > th {
   background-color: #b1dfbb;
+}
+
+.product-description {
+    max-width:800px;
+    max-height: 1.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #999;
 }
 
 .table-info,
