@@ -228,7 +228,7 @@
                         </div>
                         <small class="pt-1">(99 Reviews)</small>
                     </div>
-                    <h3 class="font-weight-semi-bold mb-4">${{ product.price }}</h3>
+                    <h3 class="font-weight-semi-bold mb-4">Ksh .{{ product.price }}</h3>
                     <p class="mb-4">{{ product.description }}</p>
                     <div class="d-flex mb-3">
                         <strong class="text-dark mr-3">Sizes:</strong>
@@ -424,8 +424,8 @@
                         <div class="text-center py-4">
                             <a class="h6 text-decoration-none text-truncate" href="{% url 'overview:detail-prev' prodid=product.id %}">{{ product.name }}</a>
                             <div class="d-flex align-items-center justify-content-center mt-2">
-                                <h5>${{ product.price }}</h5>
-                                <h6 class="text-muted ml-2"><del>${{ product.original_price }}</del></h6>
+                                <h5>Ksh .{{ product.price }}</h5>
+                                <h6 class="text-muted ml-2"><del>Ksh .{{ product.original_price }}</del></h6>
                             </div>
                             <div class="d-flex align-items-center justify-content-center mb-1">
                                 {% for _ in product.rating_range %}

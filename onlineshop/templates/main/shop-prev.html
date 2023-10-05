@@ -207,22 +207,22 @@
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="price-1" name="price_category" value="price_category1">
-                            <label class="custom-control-label" for="price-1">$0 - $100</label>
+                            <label class="custom-control-label" for="price-1">Ksh .(0 - 100)</label>
                             <span class="badge border font-weight-normal">{{ cat1_product_count }}</span>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="price-2" name="price_category" value="price_category2">
-                            <label class="custom-control-label" for="price-2">$100 - $200</label>
+                            <label class="custom-control-label" for="price-2">Ksh .(100 - 200)</label>
                             <span class="badge border font-weight-normal">{{ cat2_product_count }}</span>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="price-3" name="price_category" value="price_category3">
-                            <label class="custom-control-label" for="price-3">$200 - $300</label>
+                            <label class="custom-control-label" for="price-3">Ksh .(200 - 300)</label>
                             <span class="badge border font-weight-normal">{{ cat3_product_count }}</span>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="price-4" name="price_category" value="price_category4">
-                            <label class="custom-control-label" for="price-4">$300+</label>
+                            <label class="custom-control-label" for="price-4">Ksh .300+</label>
                             <span class="badge border font-weight-normal">{{ cat4_product_count }}</span>
                         </div>
                     </div>
@@ -360,7 +360,7 @@
                                     <div class="text-center py-4">
                                         <a class="h6 text-decoration-none text-truncate" href="">{{ product.name }}</a>
                                         <div class="d-flex align-items-center justify-content-center mt-2">
-                                            <h5>${{ product.price }}</h5><h6 class="text-muted ml-2"><del>${{ product.original_price }}</del></h6>
+                                            <h5>Ksh .{{ product.price }}</h5><h6 class="text-muted ml-2"><del>Ksh .{{ product.original_price }}</del></h6>
                                         </div>
                                         <div class="d-flex align-items-center justify-content-center mb-1">
                                             <small class="fa fa-star text-primary mr-1"></small>
