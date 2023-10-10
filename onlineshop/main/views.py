@@ -16,8 +16,10 @@ from django_daraja.views import stk_push_callback_url
 from .models import *
 from mpesa.core import MpesaClient
 from adminview.models import Product, ProductImage, ProductProperties
-from userview.models import Review
+from userview.models import Review, Order, OrderItem
 from django.contrib.auth.models import User
+
+from userview.models import TransactionDetails, PaymentResponse, TransactionResult
 
 
 def remove_media_root(file_paths):
@@ -202,7 +204,7 @@ def filter_products(request):
         selected_sizes = request.POST.getlist("size_category")
 
         filters = {}
-        filtered_products = []
+        filtered_products = Product.objects.all()
 
         if selected_prices:
             price_ranges = []
@@ -214,14 +216,13 @@ def filter_products(request):
                 elif selected_price == "price_category3":
                     price_ranges.append((200, 300))
                 elif selected_price == "price_category4":
-                    price_ranges.append((300, float('inf')))
+                    # Use a very large number instead of 'inf'
+                    price_ranges.append((300, 1e9))
             if price_ranges:
                 price_q = Q()
                 for price_range in price_ranges:
                     price_q |= Q(price__range=price_range)
-                filtered_products = Product.objects.filter(price_q)
-            else:
-                filtered_products = Product.objects.all()
+                filtered_products = filtered_products.filter(price_q)
 
         if selected_colors:
             filters["productproperties__colors__name__in"] = selected_colors
@@ -295,7 +296,59 @@ def search(request):
     else:
         products = []
 
-    return render(request, "overview/shop-prev.html", {"products": products})
+    return render(request, "main/shop-prev.html", {"products": products})
+
+
+def delete_cart_item(request):
+    if request.method == "POST":
+        product_id = request.POST.get("product_id")
+        print(f"item found {product_id}")
+
+        cart = request.COOKIES.get('cart', '{}')
+        cart = json.loads(cart)
+
+        if str(product_id) in cart:
+            del cart[str(product_id)]
+
+            response = JsonResponse({'success': True, 'message': 'Product removed from cart'})
+            response.set_cookie('cart', json.dumps(cart))
+            return response
+        else:
+            return JsonResponse({'success': False, 'message': 'Product not found in cart'})
+
+    return HttpResponse(status=405)
+
+
+def clear_cart(request):
+    cart = request.COOKIES.get('cart', '{}')
+    cart = json.loads(cart)
+
+    list = [i for i in cart]
+    for i in list:
+        del cart[i]
+
+    response = JsonResponse({'success': True, 'message': 'Products removed from cart'})
+    response.set_cookie('cart', json.dumps(cart))
+    return response
+
+
+def delete_wishlist_item(request):
+    if request.method == "POST":
+        product_id = request.POST.get("product_id")
+
+        wishlist = request.COOKIES.get('wishlist', '{}')
+        wishlist = json.loads(wishlist)
+
+        if str(product_id) in wishlist:
+            del wishlist[str(product_id)]
+
+            response = JsonResponse({'success': True, 'message': 'Product removed from wishlist'})
+            response.set_cookie('wishlist', json.dumps(wishlist))
+            return response
+        else:
+            return JsonResponse({'success': False, 'message': 'Product not found in wishlist'})
+
+    return HttpResponse(status=405)
 
 
 def submit_pay_details(request, total_price):
@@ -306,46 +359,100 @@ def submit_pay_details(request, total_price):
         phone = request.POST.get('number')
         total = total_price
 
-        response = lipa_na_mpesa_online(phone, total, firstname)
+        response = lipa_na_mpesa_online(request, phone, total, firstname)
 
         return HttpResponse(response)
     return redirect("overview:checkout-prev")
 
 
-def lipa_na_mpesa_online(number, total_amount, name):
-    cl = MpesaClient()
-    access_token = cl.access_token()
-    api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
-    headers = {"Authorization": "Bearer %s" % access_token}
+def lipa_na_mpesa_online(request, number, total_amount, name):
+    # cl = MpesaClient()
+    # access_token = cl.access_token()
+    # api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+    # headers = {"Authorization": "Bearer %s" % access_token}
+    #
+    # BusinessShortCode = config('MPESA_EXPRESS_SHORTCODE')
+    #
+    # timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    # passkey = config('MPESA_PASSKEY')
+    # password = base64.b64encode((BusinessShortCode + passkey + timestamp).encode('ascii')).decode('utf-8')
+    #
+    # PartyA = str(number)[1:]
+    # print(number)
+    # print(PartyA)
+    # PartyB = BusinessShortCode
+    # PhoneNumber = PartyA
+    # AccountReference = f"{name}"
+    # TransactionDesc = "Testing stk push"
+    #
+    # request_data = {
+    #     "BusinessShortCode": BusinessShortCode,
+    #     "Password": password,
+    #     "Timestamp": timestamp,
+    #     "TransactionType": "CustomerBuyGoodsOnline",
+    #     "Amount": total_amount,
+    #     "PartyA": PartyA,
+    #     "PartyB": PartyB,
+    #     "PhoneNumber": PhoneNumber,
+    #     "CallBackURL": stk_push_callback_url,
+    #     "AccountReference": AccountReference,
+    #     "TransactionDesc": TransactionDesc
+    # }
+    #
+    # resp = requests.post(api_url, json=request_data, headers=headers)
+    # print(resp)
+    #
+    # if resp.status_code == 200 or resp.json().get('ResponseCode') == '0':
+    #     order = Order.objects.create(
+    #         customer=None,
+    #         total_amount=total_amount,
+    #         payment_reference=resp.json().get('MerchantRequestID'),
+    #         payment_status=True
+    #     )
+    #     cart = request.COOKIES.get('cart', '{}')
+    #     cart = json.loads(cart)
+    #
+    #     for product_id, quantity in cart.items():
+    #         product = get_object_or_404(Product, id=product_id)
+    #         total_price = product.price * quantity
+    #
+    #         order_item = OrderItem.objects.create(
+    #             order=order,
+    #             product=product,
+    #             quantity=quantity,
+    #             total_price=total_price
+    #         )
 
-    BusinessShortCode = config('MPESA_EXPRESS_SHORTCODE')
+    clear_cart(request)
+    print(clear_cart(request))
 
-    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-    passkey = config('MPESA_PASSKEY')
-    password = base64.b64encode((BusinessShortCode + passkey + timestamp).encode('ascii')).decode('utf-8')
+    return clear_cart(request)
 
-    PartyA = str(number)[1:]
-    print(number)
-    print(PartyA)
-    PartyB = BusinessShortCode
-    PhoneNumber = PartyA
-    AccountReference = f"{name}"
-    TransactionDesc = "Testing stk push"
 
-    request_data = {
-        "BusinessShortCode": BusinessShortCode,
-        "Password": password,
-        "Timestamp": timestamp,
-        "TransactionType": "CustomerBuyGoodsOnline",
-        "Amount": total_amount,
-        "PartyA": PartyA,
-        "PartyB": PartyB,
-        "PhoneNumber": PhoneNumber,
-        "CallBackURL": stk_push_callback_url,
-        "AccountReference": AccountReference,
-        "TransactionDesc": TransactionDesc
-    }
+def handle_payment_response(request):
+    response_data = request.POST
 
-    resp = requests.post(api_url, json=request_data, headers=headers)
-    print(resp)
-    return HttpResponse(resp)
+    payment_response = PaymentResponse.objects.create(
+        merchant_request_id=response_data['MerchantRequestID'],
+        checkout_request_id=response_data['CheckoutRequestID'],
+        response_code=response_data['ResponseCode'],
+        response_description=response_data['ResponseDescription'],
+        customer_message=response_data['CustomerMessage']
+    )
+
+    if response_data['ResponseCode'] == '0':
+        transaction_result = TransactionResult.objects.create(
+            payment_response=payment_response,
+            result_code=response_data['ResultCode'],
+            result_description=response_data['ResultDesc']
+        )
+
+        TransactionDetails.objects.create(
+            transaction_result=transaction_result,
+            amount=response_data['Body']['stkCallback']['CallbackMetadata']['Item'][0]['Value'],
+            mpesa_receipt_number=response_data['Body']['stkCallback']['CallbackMetadata']['Item'][1]['Value'],
+            transaction_date=response_data['Body']['stkCallback']['CallbackMetadata']['Item'][2]['Value'],
+            phone_number=response_data['Body']['stkCallback']['CallbackMetadata']['Item'][3]['Value']
+        )
+
+    return HttpResponse("Payment response processed successfully")

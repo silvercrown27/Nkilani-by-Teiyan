@@ -7,6 +7,8 @@ from PIL import Image
 import os
 
 from .models import *
+from main.models import ContactUs, Newsletter
+from userview.models import Order, OrderItem, Review
 
 
 def admin_page(request):
@@ -15,6 +17,30 @@ def admin_page(request):
     products = Product.objects.all()
     context = {"user": user, "products": products}
     return render(request, "adminview/home_page.html", context)
+
+
+def subscritions_page(request):
+    subs = Newsletter.objects.all()
+    context = {"subscriptions": subs}
+    return render(request, "adminview/subscriptions.html", context)
+
+
+def orders_page(request):
+    orders = Order.objects.all()
+    context = {"orders": orders}
+    return render(request, "adminview/orders.html", context)
+
+
+def messages_page(request):
+    messages = ContactUs.objects.all()
+    context = {"messages": messages}
+    return render(request, "adminview/messages.html", context)
+
+
+def remove_featured_product(request):
+    products = Product.objects.all()
+    context = {"products": products}
+    return render(request, "adminview/add-to-featured.html", context)
 
 
 def add_featured_product(request):

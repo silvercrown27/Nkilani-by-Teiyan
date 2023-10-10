@@ -32,7 +32,6 @@
 </head>
 
 <body>
-
 <!-- Navbar Start -->
     <div class="container-fluid bg-dark mb-30">
         <div class="row px-xl-5">
@@ -56,8 +55,8 @@
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="{% url 'adminview:admin-home' %}" class="nav-item nav-link">Home</a>
-                            <a href="{% url 'adminview:products' %}" class="nav-item nav-link active">Products</a>
-                            <a href="{% url 'adminview:orders' %}" class="nav-item nav-link">Orders</a>
+                            <a href="{% url 'adminview:products' %}" class="nav-item nav-link">Products</a>
+                            <a href="{% url 'adminview:orders' %}" class="nav-item nav-link active">Orders</a>
                             <a href="{% url 'adminview:messages' %}" class="nav-item nav-link">Messages</a>
                             <a href="{% url 'adminview:subscriptions' %}" class="nav-item nav-link">Subscriptions</a>
                         </div>
@@ -77,57 +76,98 @@
     </div>
     <!-- Navbar End -->
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
 
+<section class="section">
     <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h3 class="h5 mb-4 text-center">All Products</h3>
-            <div class="table-wrap">
-                <table class="table">
-                    <thead class="thead-primary">
-                        <tr>
-                            <th>&nbsp;</th>
-                            <th>&nbsp;</th>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                            <th>&nbsp;</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for product in products %}
-                        <tr class="alert" role="alert">
-                            <td>
-                                <label class="checkbox-wrap checkbox-primary">
-                                    <input type="checkbox" checked="">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <div class="card" style="width: 40px; border-radius: 10px;">
-                                    <img class="w-100" src="/media/{{ product.image }}" alt="">
+        <div class="justify-content-center row">
+            <div class="col-lg-12">
+                <div class="candidate-list-widgets mb-4">
+                    <form action="#" class="">
+                        <!-- Your filtering options here -->
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="align-items-center row">
+                    <div class="col-lg-8">
+                        <div class="mb-3 mb-lg-0">
+                            <h6 class="fs-16 mb-0">Showing 1 – 8 of 11 results</h6>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="candidate-list-widgets">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="selection-widget">
+                                        <!-- Your sorting options here -->
+                                    </div>
                                 </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <span>{{ product.name }}</span></br>
-                                    <span class="product-description">{{ product.description }}</span>
+                                <div class="col-lg-6">
+                                    <div class="selection-widget mt-2 mt-lg-0">
+                                        <!-- Page selection options here -->
+                                    </div>
                                 </div>
-                            </td>
-                            <td>${{ product.price }}</td>
-                            <td class="jd-flex justify-content-center">{{ product.quantity }}</td>
-                            <td><button type="button" class="btn btn-primary" data-dismiss="alert" aria-label="edit">Edit</button></td>
-                            <td><button type="button" class="btn btn-danger" data-dismiss="alert" aria-label="delete">Delete</button></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="candidate-list">
+                    <!-- Loop through your orders and generate order cards -->
+                    {% for order in orders %}
+                    <div class="candidate-list-box card mt-4">
+                        <div class="p-4 card-body">
+                            <div class="align-items-center row">
+                                <div class="col-auto">
+                                    <div class="candidate-list-images">
+                                        <a href="#"><img src="https://bootdey.com/img/Content/avatar/avatar{{ forloop.counter }}.png" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="candidate-list-content mt-3 mt-lg-0">
+                                        <h5 class="fs-19 mb-0">
+                                            <a class="primary-link" href="">{{ order.name }}</a>
+                                        </h5>
+                                        <p class="text-muted mb-2">{{ order.position }}</p>
+                                        <ul class="list-inline mb-0 text-muted">
+                                            <li class="list-inline-item"><i class="mdi mdi-map-marker"></i> {{ order.location }}</li>
+                                            <li class="list-inline-item"><i class="mdi mdi-wallet"></i> ${{ order.salary }} / hours</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mt-2 mt-lg-0 d-flex flex-wrap align-items-start gap-1">
+                                        {% for skill in order.skills %}
+                                        <span class="badge bg-soft-secondary fs-14 mt-1">{{ skill }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="favorite-icon">
+                                <a href="#"><i class="mdi mdi-heart fs-18"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="mt-4 pt-2 col-lg-12">
+                <nav aria-label="Page navigation example">
+                    <div class="pagination job-pagination mb-0 justify-content-center">
+                        <!-- Pagination links here -->
+                    </div>
+                </nav>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+
+
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 

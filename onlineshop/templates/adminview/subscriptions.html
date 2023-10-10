@@ -56,10 +56,10 @@
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="{% url 'adminview:admin-home' %}" class="nav-item nav-link">Home</a>
-                            <a href="{% url 'adminview:products' %}" class="nav-item nav-link active">Products</a>
+                            <a href="{% url 'adminview:products' %}" class="nav-item nav-link">Products</a>
                             <a href="{% url 'adminview:orders' %}" class="nav-item nav-link">Orders</a>
                             <a href="{% url 'adminview:messages' %}" class="nav-item nav-link">Messages</a>
-                            <a href="{% url 'adminview:subscriptions' %}" class="nav-item nav-link">Subscriptions</a>
+                            <a href="{% url 'adminview:subscriptions' %}" class="nav-item nav-link active">Subscriptions</a>
                         </div>
                         <div class="user-area dropdown float-right">
                             <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -77,57 +77,6 @@
     </div>
     <!-- Navbar End -->
 
-
-    <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h3 class="h5 mb-4 text-center">All Products</h3>
-            <div class="table-wrap">
-                <table class="table">
-                    <thead class="thead-primary">
-                        <tr>
-                            <th>&nbsp;</th>
-                            <th>&nbsp;</th>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                            <th>&nbsp;</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for product in products %}
-                        <tr class="alert" role="alert">
-                            <td>
-                                <label class="checkbox-wrap checkbox-primary">
-                                    <input type="checkbox" checked="">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <div class="card" style="width: 40px; border-radius: 10px;">
-                                    <img class="w-100" src="/media/{{ product.image }}" alt="">
-                                </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <span>{{ product.name }}</span></br>
-                                    <span class="product-description">{{ product.description }}</span>
-                                </div>
-                            </td>
-                            <td>${{ product.price }}</td>
-                            <td class="jd-flex justify-content-center">{{ product.quantity }}</td>
-                            <td><button type="button" class="btn btn-primary" data-dismiss="alert" aria-label="edit">Edit</button></td>
-                            <td><button type="button" class="btn btn-danger" data-dismiss="alert" aria-label="delete">Delete</button></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 

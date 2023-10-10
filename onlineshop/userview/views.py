@@ -9,6 +9,7 @@ from django.http import Http404, JsonResponse, HttpResponse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django_daraja.views import stk_push_callback_url
 
 from mpesa.core import MpesaClient
@@ -109,6 +110,58 @@ def checkout_page(request):
 
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
+
+
+def filter_products(request):
+    if request.method == "POST":
+        selected_prices = request.POST.getlist("price_category")
+        selected_colors = request.POST.getlist("color_category")
+        selected_sizes = request.POST.getlist("size_category")
+
+        filters = {}
+        filtered_products = Product.objects.all()
+
+        if selected_prices:
+            price_ranges = []
+            for selected_price in selected_prices:
+                if selected_price == "price_category1":
+                    price_ranges.append((0, 100))
+                elif selected_price == "price_category2":
+                    price_ranges.append((100, 200))
+                elif selected_price == "price_category3":
+                    price_ranges.append((200, 300))
+                elif selected_price == "price_category4":
+                    # Use a very large number instead of 'inf'
+                    price_ranges.append((300, 1e9))
+            if price_ranges:
+                price_q = Q()
+                for price_range in price_ranges:
+                    price_q |= Q(price__range=price_range)
+                filtered_products = filtered_products.filter(price_q)
+
+        if selected_colors:
+            filters["productproperties__colors__name__in"] = selected_colors
+
+        if selected_sizes:
+            filters["productproperties__sizes__name__in"] = selected_sizes
+
+        if not selected_prices and not selected_colors and not selected_sizes:
+            filtered_products = Product.objects.all()
+
+        data = [
+            {
+                "id": product.id,
+                "image": product.image,
+                "name": product.name,
+                "price": product.price,
+                "color": ", ".join(product.productproperties_set.first().colors.values_list("name", flat=True)) if product.productproperties_set.exists() else None,
+                "size": ", ".join(product.productproperties_set.first().sizes.values_list("name", flat=True)) if product.productproperties_set.exists() else None
+            }
+            for product in filtered_products
+        ]
+
+        return render(request, "userview/shop.html", {"products": data})
+    return redirect("userview:user-shop")
 
 
 def detail_page(request, prodid):
@@ -396,6 +449,62 @@ def search(request):
     template = "userview/shop.html"
 
     return render(request, template, {"products": products})
+
+
+def remove_item_from_cart(request):
+    user = request.user
+
+    if not request.user.is_authenticated:
+        return redirect('/overview/')
+
+    try:
+        customer = Customers.objects.get(user=user)
+
+        if request.method == 'POST':
+            product_id = request.POST.get('product_id')
+
+            cart = Cart.objects.get(customer=customer)
+            item = CartItem.objects.get(cart=cart, product=product_id)
+            item.delete()
+
+            cart_items = CartItem.objects.filter(cart=cart)
+            cart_total = int(sum([item.product.price * item.quantity for item in cart_items])) + 1
+            subtotal = sum([cart.total for cart in cart_items]).__round__(0)
+
+            response_data = {
+                'success': True,
+                'cart_total': cart_total,
+                'subtotal': subtotal,
+            }
+
+            return JsonResponse(response_data)
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+    except Customers.DoesNotExist:
+        raise Http404(f"No user registered under the id {user.id}")
+
+
+def remove_item_from_wishlist(request):
+    user = request.user
+
+    if not request.user.is_authenticated:
+        return redirect('/overview/')
+
+    try:
+        customer = Customers.objects.get(user=user)
+
+        if request.method == 'POST':
+            product_id = request.POST.get('product_id')
+
+            FavoriteProduct.objects.get(user=customer, product=product_id).delete()
+
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+    except Customers.DoesNotExist:
+        raise Http404(f"No user registered under the id {user.id}")
 
 
 def logout_user(request):

@@ -230,10 +230,43 @@
                             <td class="align-middle" id="prod-subtotal">
                                 <p>Ksh .{% widthratio cart_item.product.price 1 cart_item.quantity %}</p>
                             </td>
-                            <td class="align-middle">
-                                <button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
+                            <td class="align-middle" data-product-id="{{ cart_item.product.id }}">
+                                <form class="remove-cart-form" action="{% url 'overview:delete_cart_item' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="product_id" value="{{ cart_item.product.id }}">
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
+                                </form>
                             </td>
                         </tr>
+                            <script>
+                            $(document).ready(function() {
+                                $(document).on("submit", ".remove-cart-form", function(event) {
+                                    event.preventDefault();
+
+                                    var form = $(this);
+                                    var productId = form.data("product-id");
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: form.attr("action"),
+                                        data: form.serialize(),
+                                        success: function(response) {
+                                            if (response.success) {
+                                                form.closest("tr").remove();
+                                                // Update the total price if needed
+                                                // ...
+                                            } else {
+                                                alert("Failed to remove product from cart.");
+                                            }
+                                        },
+                                        error: function() {
+                                            alert("An error occurred while removing the product.");
+                                        }
+                                    });
+                                });
+                            });
+                            </script>
+
                         {% endfor %}
                     </tbody>
                 </table>
@@ -281,7 +314,6 @@
 
         cartTotalElement.textContent = `$${(subtotal + 10).toFixed(2)}`;
     </script>
-
 
 
     <!-- Footer Start -->

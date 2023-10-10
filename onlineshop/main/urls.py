@@ -20,7 +20,9 @@ urlpatterns = [
     path('add-to-cart', views.add_to_cart, name="add-to-cart"),
     path('add-to-wishlist', views.add_to_wishlist, name="add-to-wishlist"),
     path('cart-items-count', views.count_cart_items, name="cart-items-count"),
+    path('delete-cart-item', views.delete_cart_item, name="delete_cart_item"),
     path("wishlist-items-count", views.count_wishlist_items, name="wishlist-items-count"),
+    path("payment-response", views.handle_payment_response, name="payment-response"),
     path("filter-products", views.filter_products, name="filter-products"),
     path("<str:total_price>/pay", views.submit_pay_details, name="submit_pay_details")
 ]
