@@ -37,7 +37,7 @@ class FavoriteProduct(models.Model):
 
 
 class Order(models.Model):
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    customer = models.ForeignKey(Customers, on_delete=models.CASCADE, null=True)
     customer_name = models.CharField(max_length=100, null=True)
     products = models.ManyToManyField(Product, through='OrderItem')
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -50,7 +50,6 @@ class Order(models.Model):
             return f"Order #{self.id} by {self.customer.name}"
         else:
             return f"Order #{self.id} by {self.customer_name}"
-
 
 
 class OrderItem(models.Model):
@@ -74,7 +73,8 @@ class Payment(models.Model):
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customers, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customers, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=100)
     rating = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)])
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

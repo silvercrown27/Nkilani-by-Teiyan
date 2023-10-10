@@ -1532,6 +1532,21 @@ pre code {
   }
 }
 
+.related-carousel {
+    max-width: 200px;
+    height: 600px;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+
+.related-carousel {
+    display: inline-flex;
+}
+
+.product-item {
+    margin-right: 10px;
+}
+
 .table {
   width: 100%;
   margin-bottom: 1rem;

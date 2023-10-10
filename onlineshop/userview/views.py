@@ -79,7 +79,7 @@ def contact_page(request):
 
     try:
         customer = Customers.objects.get(user=user)
-        context = {'user': user, "customer":customer}
+        context = {'user': user, "customer": customer}
         return render(request, "userview/contact.html", context)
     except Customers.DoesNotExist:
         return JsonResponse({'error': 'Customer not found'}, status=404)
@@ -131,7 +131,6 @@ def filter_products(request):
                 elif selected_price == "price_category3":
                     price_ranges.append((200, 300))
                 elif selected_price == "price_category4":
-                    # Use a very large number instead of 'inf'
                     price_ranges.append((300, 1e9))
             if price_ranges:
                 price_q = Q()
@@ -154,8 +153,10 @@ def filter_products(request):
                 "image": product.image,
                 "name": product.name,
                 "price": product.price,
-                "color": ", ".join(product.productproperties_set.first().colors.values_list("name", flat=True)) if product.productproperties_set.exists() else None,
-                "size": ", ".join(product.productproperties_set.first().sizes.values_list("name", flat=True)) if product.productproperties_set.exists() else None
+                "color": ", ".join(product.productproperties_set.first().colors.values_list("name",
+                                                                                            flat=True)) if product.productproperties_set.exists() else None,
+                "size": ", ".join(product.productproperties_set.first().sizes.values_list("name",
+                                                                                          flat=True)) if product.productproperties_set.exists() else None
             }
             for product in filtered_products
         ]
@@ -486,10 +487,7 @@ def remove_item_from_cart(request):
 
 
 def remove_item_from_wishlist(request):
-    user = request.user
-
-    if not request.user.is_authenticated:
-        return redirect('/overview/')
+    user = check_user_auth(request)
 
     try:
         customer = Customers.objects.get(user=user)
@@ -505,6 +503,46 @@ def remove_item_from_wishlist(request):
 
     except Customers.DoesNotExist:
         raise Http404(f"No user registered under the id {user.id}")
+
+
+def check_user_auth(request):
+    user = request.user
+
+    if not request.user.is_authenticated:
+        return redirect('/overview/')
+    return user
+
+
+def review_product(request):
+    user = check_user_auth(request)
+    customer = Customers.object.get(user=user)
+    order = Order.objects.get(customer=customer)
+
+    if request.method == "POST":
+        product_id = request.POST.get("product_id")
+        rating = request.POST.get("rating")
+        text = request.POST.get("text")
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+
+        order_item_exists = OrderItem.objects.filter(order=order, product_id=product_id).exists()
+
+        if order_item_exists:
+            review = Review.objects.create(
+                product_id=product_id,
+                rating=rating,
+                text=text,
+                name=name,
+                email=email,
+                user=user,
+            )
+
+            response_data = {"order_item_exists": order_item_exists, "review_id": review.id}
+        else:
+            response_data = {"order_item_exists": order_item_exists}
+        return JsonResponse(response_data)
+
+    return JsonResponse({"error": "Invalid request method"}, status=400)
 
 
 def logout_user(request):
